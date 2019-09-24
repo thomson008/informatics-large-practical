@@ -22,7 +22,7 @@ public class Position {
 	 * @return Position object representing the position of the drone after one move in the direction passed as argument
 	 */
 	public Position nextPosition(Direction direction) {
-		int directionIndex = Arrays.asList(Direction.values()).indexOf(direction);
+		int directionIndex = direction.ordinal();
 		
 		double degreeAngle = directionIndex * 22.5;
 		double radianAngle = Math.toRadians(degreeAngle);
@@ -39,8 +39,8 @@ public class Position {
 	  * @return boolean, true if drone is within the play area, false if it is outside
 	  */
 	public boolean inPlayArea() { 
-		boolean latitudeOK = this.latitude <= 55.946233 && this.latitude >= 55.942617;
-		boolean longitudeOK = this.longitude <= -3.194319 && this.latitude >= -3.192473;
+		boolean latitudeOK = this.latitude < 55.946233 && this.latitude > 55.942617;
+		boolean longitudeOK = this.longitude < -3.184319 && this.latitude > -3.192473;
 		return latitudeOK && longitudeOK;
 	}
 }
