@@ -4,7 +4,6 @@
 
   <groupId>uk.ac.ed.inf</groupId>
   <artifactId>powergrab</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>powergrab</name>
@@ -21,5 +20,11 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20190722</version>
+	</dependency>
   </dependencies>
+  <version>1.0</version>
 </project>
