@@ -9,10 +9,9 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Point;
 /**
  * 
  * @author th
@@ -41,58 +40,44 @@ public class JSONparser {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public static JSONObject readJsonFromUrl(String url) throws IOException {
+	public static String readJsonFromUrl(String url) throws IOException {
 		InputStream is = new URL(url).openStream();
 		try {
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 			String jsonText = readAll(rd);
-			JSONObject json = new JSONObject(jsonText);
-			return json;
+			return jsonText;
 		} finally {
 			is.close();
 		}
 	}
-
-	/**
-	 * 
-	 * @param url
-	 * @return
-	 * @throws IOException
-	 */
-	public static List<Station> parseJSON(String url) throws IOException {
-		JSONObject json = readJsonFromUrl(url);
-		JSONArray features = json.getJSONArray("features");
-		ArrayList<Station> stations = new ArrayList<>();
-
-		for (int i = 0; i < features.length(); i++) {
-			JSONObject feature = features.getJSONObject(i);
-			Station newStation = createObject(feature);
-			stations.add(newStation);
+	
+	public static List<Station> parseJson(String url) throws IOException {
+		String json = readJsonFromUrl(url);
+		FeatureCollection features = FeatureCollection.fromJson(json);
+		List<Feature> featureList = features.features();
+		ArrayList<Station> stationList = new ArrayList<>();
+		
+		for (int i = 0; i < featureList.size(); i++) {
+			Feature feature = featureList.get(i);
+			Point coordinates = (Point) feature.geometry();
+			
+			String id = feature.getStringProperty("id");
+			String symbol = feature.getStringProperty("marker-symbol");
+			String color = feature.getStringProperty("marker-color");
+			
+			double coins = feature.getNumberProperty("coins").doubleValue();
+			double power = feature.getNumberProperty("power").doubleValue();
+			double longitude = coordinates.longitude();
+			double latitude = coordinates.latitude();
+			
+			Position stationPosition = new Position(latitude, longitude);
+			Station newStation = new Station(id, stationPosition, coins, power, symbol, color);
+			stationList.add(newStation);
+			
 		}
-
-		return stations;
+		
+		return stationList;
 	}
-	/**
-	 * 
-	 * @param feature
-	 * @return
-	 */
-	public static Station createObject(JSONObject feature) {
-		JSONObject properties = (JSONObject) feature.get("properties");
-		JSONObject geometry = (JSONObject) feature.get("geometry");
-		JSONArray coordinates = geometry.getJSONArray("coordinates");
 
-		String id = properties.getString("id");
-		double coins = properties.getDouble("coins");
-		double power = properties.getDouble("power");
-		String symbol = properties.getString("marker-symbol");
-		String color = properties.getString("marker-color");
-		double longitude = coordinates.getDouble(0);
-		double latitude = coordinates.getDouble(1);
 
-		Position stationPosition = new Position(latitude, longitude);
-
-		Station newStation = new Station(id, stationPosition, coins, power, symbol, color);
-		return newStation;
-	}
 }
