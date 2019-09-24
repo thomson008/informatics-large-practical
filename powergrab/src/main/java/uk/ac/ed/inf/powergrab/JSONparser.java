@@ -51,6 +51,12 @@ public class JSONparser {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param url String representation of the URL where the JSON file resides
+	 * @return List of Station objects parsed from the JSON
+	 * @throws IOException
+	 */
 	public static List<Station> parseJson(String url) throws IOException {
 		String json = readJsonFromUrl(url);
 		FeatureCollection features = FeatureCollection.fromJson(json);
@@ -73,11 +79,8 @@ public class JSONparser {
 			Position stationPosition = new Position(latitude, longitude);
 			Station newStation = new Station(id, stationPosition, coins, power, symbol, color);
 			stationList.add(newStation);
-			
 		}
 		
 		return stationList;
 	}
-
-
 }
