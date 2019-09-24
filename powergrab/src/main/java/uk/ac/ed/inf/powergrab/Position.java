@@ -1,7 +1,5 @@
 package uk.ac.ed.inf.powergrab;
 
-import java.util.Arrays;
-
 public class Position {
 	public double latitude;
 	public double longitude;
@@ -19,7 +17,7 @@ public class Position {
 	/**
 	 * Method to compute the new coordinates of the drone after it makes a move
 	 * @param direction One of the 16 wind directions
-	 * @return Position object representing the position of the drone after one move in the direction passed as argument
+	 * @return Position object representing the position of the drone after one move in the direction passed as an argument
 	 */
 	public Position nextPosition(Direction direction) {
 		int directionIndex = direction.ordinal();

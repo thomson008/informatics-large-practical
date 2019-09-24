@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  */
 public class App {
-	public static ArrayList<Station> stations = new ArrayList<>();
+	public static ArrayList<Station> stations;
 	
     public static void main(String[] args) throws IOException {
     	String JsonURL = "http://homepages.inf.ed.ac.uk/stg/powergrab/";
