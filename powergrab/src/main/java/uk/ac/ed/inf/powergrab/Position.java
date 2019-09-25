@@ -54,7 +54,7 @@ public class Position {
 	}
 	
 	/**
-	 * 
+	 * Computes the angle of the station Position polar coordinates, assuming the Position of a drone is the origin of coordinate system
 	 * @param stationPosition position of the station
 	 * @return angle in degrees between the drone and the station
 	 */
