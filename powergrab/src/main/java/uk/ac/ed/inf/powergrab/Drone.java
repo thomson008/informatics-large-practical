@@ -2,8 +2,24 @@ package uk.ac.ed.inf.powergrab;
 
 public abstract class Drone {
 	public double power = 250.0;
-	public double coins = 0.0;
-	public Position position;
+	private double coins = 0.0;
+	protected Position position;
+	
+	/**
+	 * getter for coins
+	 */
+
+	public double getCoins() {
+		return coins;
+	}
+	
+	/**
+	 * Checks if the drone still has power left
+	 * @return true if it has power, false otherwise
+	 */
+	public boolean hasPower() {
+		return power >= 1.25;
+	}
 	
 	public Drone(Position initialPosition) {
 		position = initialPosition;
@@ -16,6 +32,11 @@ public abstract class Drone {
 	public void makeMove(Direction dir) {
 		Position nextPosition =  position.nextPosition(dir);
 		position = nextPosition;
+		power -= 1.25;
+	}
+
+	public Direction computeNextMove() {
+		return Direction.N;
 	}
 	
 	/**
@@ -32,6 +53,12 @@ public abstract class Drone {
 		power = Math.max(0,  power + stationPower);
 		coins = Math.max(0, coins + stationCoins);
 		
+		System.out.println("power+" + stationPower + " " + station.id);
+		
 		station.updateSymbol();
+	}
+	
+	public boolean isWithinDistance(Station station) {
+		return (position.getDistance(station.coordinates) <= 0.00025);
 	}
 }

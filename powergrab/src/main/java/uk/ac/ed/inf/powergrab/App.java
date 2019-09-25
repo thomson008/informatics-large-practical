@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class App {
 	public static List<Station> stations;
+	public static Drone drone;
 	
     public static void main(String[] args) throws IOException {
     	String jsonURL = "http://homepages.inf.ed.ac.uk/stg/powergrab/";
@@ -19,14 +20,37 @@ public class App {
     	jsonURL += path.toString().replace("\\", "/");
         stations = JSONparser.parseJson(jsonURL);
         
-        Drone drone;
         Position initialPosition = new Position(Double.parseDouble(args[3]), Double.parseDouble(args[4]));
         
-        if (args[6].equals("stateless"))
+        if (args[6].equals("stateless")) 
         	drone = new StatelessDrone(initialPosition);
         else if (args[6].equals("stateful"))
-        	drone = new StatefulDrone(initialPosition);
+        	drone = (StatefulDrone) new StatefulDrone(initialPosition);
         else
-        	drone = new StatelessDrone(initialPosition);
+        	drone = new StatelessDrone(initialPosition);	
+        
+        playGame();
     }
+
+	private static void playGame() {
+		int i = 0;
+
+		while (drone.hasPower()) {
+			for (Station station : stations) {
+				if (drone.isWithinDistance(station)) {
+					drone.exchangeWithStation(station);
+					break;
+				}
+			}
+			
+			Direction nextDirection = drone.computeNextMove();
+
+			
+			drone.makeMove(nextDirection);
+			System.out.println(i + ". Power left: " + drone.power);
+
+			i++;
+		}
+		
+	}
 }
