@@ -34,14 +34,11 @@ public class App {
 
 	private static void playGame() {
 		int i = 0;
-
+		Station stationWithinRange;
+		
 		while (drone.hasPower()) {
-			for (Station station : stations) {
-				if (drone.isWithinDistance(station)) {
-					drone.exchangeWithStation(station);
-					break;
-				}
-			}
+			if ((stationWithinRange = drone.hasStationWithinRange()) != null) 
+				drone.exchangeWithStation(stationWithinRange);
 			
 			Direction nextDirection = drone.computeNextMove();
 

@@ -58,7 +58,29 @@ public abstract class Drone {
 		station.updateSymbol();
 	}
 	
-	public boolean isWithinDistance(Station station) {
+	private boolean isWithinDistance(Station station) {
 		return (position.getDistance(station.coordinates) <= 0.00025);
+	}
+	
+	public Station hasStationWithinMove() {
+		Station stationWithinMove = null;
+		
+		for (Station station : App.stations) {
+			if (position.getDistance(station.coordinates) <= 0.0003)
+				stationWithinMove = station;	
+		}
+		
+		return stationWithinMove;
+	}
+	
+	public Station hasStationWithinRange() {
+		Station stationWithinRange = null;
+		
+		for (Station station : App.stations) {
+			if (isWithinDistance(station))
+				stationWithinRange = station;	
+		}
+		
+		return stationWithinRange;
 	}
 }
