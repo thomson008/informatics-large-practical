@@ -45,7 +45,6 @@ public class App {
 			
 			Direction nextDirection = drone.computeNextMove();
 
-			
 			drone.makeMove(nextDirection);
 			System.out.println(i + ". Power left: " + drone.power);
 

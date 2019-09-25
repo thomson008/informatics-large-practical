@@ -21,6 +21,7 @@ public class StatelessDrone extends Drone {
 		Position nextPosition;
 		Random random = new Random();
 		
+		/* Find stations within one move distance and already in range */
 		for (Station station : App.stations) {
 			if (position.getDistance(station.coordinates) <= 0.0003 || isWithinDistance(station))
 				stationWithinMove = station;
@@ -29,11 +30,12 @@ public class StatelessDrone extends Drone {
 		}
 
 		do {
-			/* if there is no station in Move, just go in random direction */
+			/* if there is no station in one move range, or the drone has just paired,
+			 * just go in random direction */
 			if (stationWithinMove == null || stationWithinDistance != null) 
 				directionIdx = random.nextInt(16);
 			
-			/* if a station is found within the Move, get the optimal direction for the move*/
+			/* if a station is found within one move range, get the optimal direction for the move*/
 			else {
 				double angleDirection = this.position.computeAngle(stationWithinMove.coordinates);
 				directionIdx = ((int) Math.round(angleDirection / 22.5) + i) % 16;
@@ -45,7 +47,7 @@ public class StatelessDrone extends Drone {
 			direction = Direction.values()[directionIdx];
 			nextPosition = position.nextPosition(direction);
 			
-			/* check if the Position after a move in the calculated direction will still be in Move */
+			/* check if the Position after a move in the calculated direction will still be in range */
 		} while (!nextPosition.inPlayArea() && i < 16); 
 
 		return direction;
