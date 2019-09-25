@@ -3,7 +3,7 @@ package uk.ac.ed.inf.powergrab;
 public class Position {
 	public double latitude;
 	public double longitude;
-	
+
 	/**
 	 * Constructor. Initiates the Position object with geographical coordinates
 	 * @param latitude Geographical latitude of the point on the map
@@ -40,5 +40,11 @@ public class Position {
 		boolean latitudeOK = this.latitude < 55.946233 && this.latitude > 55.942617;
 		boolean longitudeOK = this.longitude < -3.184319 && this.latitude > -3.192473;
 		return latitudeOK && longitudeOK;
+	}
+	
+	public double getDistance(Position position) {		
+		double xDistance = this.longitude - position.longitude;
+		double yDistance = this.latitude - position.latitude;
+		return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 	}
 }

@@ -12,25 +12,17 @@ public abstract class Drone {
 	/**
 	 * Method that updates the drone position after it makes a move
 	 * @param dir Wind direction in which a drone is supposed to move
-	 * @return true if the move is permitted, false if it would cause a drone to go outside the play area
 	 */
-	public boolean makeMove(Direction dir) {
+	public void makeMove(Direction dir) {
 		Position nextPosition =  position.nextPosition(dir);
-		
-		if(nextPosition.inPlayArea()) {
-			position = nextPosition;
-			return true;
-		}
-		
-		return false;
+		position = nextPosition;
 	}
 	
 	/**
 	 * Method that handles coins and power exchange between a drone and a station
 	 * @param station Station that the drone approaches
-	 * @return true if the drone still has power after the exchange, false otherwise
 	 */
-	public boolean exchangeWithStation(Station station) {
+	public void exchangeWithStation(Station station) {
 		double stationPower = station.getPower();
 		double stationCoins = station.getCoins();
 		
@@ -41,7 +33,5 @@ public abstract class Drone {
 		coins = Math.max(0, coins + stationCoins);
 		
 		station.updateSymbol();
-		
-		return power > 0;
 	}
 }

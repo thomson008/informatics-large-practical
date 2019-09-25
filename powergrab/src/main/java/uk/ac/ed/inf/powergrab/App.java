@@ -18,5 +18,16 @@ public class App {
     	Path path = Paths.get(args[2], args[1], args[0], "powergrabmap.geojson");
     	jsonURL += path.toString().replace("\\", "/");
         stations = JSONparser.parseJson(jsonURL);
+        
+        Drone drone;
+        Position initialPosition = new Position(Double.parseDouble(args[3]), Double.parseDouble(args[4]));
+        
+        
+        if (args[6].equals("stateless"))
+        	drone = new StatelessDrone(initialPosition);
+        else if (args[6].equals("stateful"))
+        	drone = new StatefulDrone(initialPosition);
+        else
+        	drone = new StatelessDrone(initialPosition);
     }
 }

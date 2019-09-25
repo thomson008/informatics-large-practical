@@ -40,7 +40,7 @@ public class JSONparser {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public static String readJsonFromUrl(String url) throws IOException {
+	private static String readJsonFromUrl(String url) throws IOException {
 		InputStream is = new URL(url).openStream();
 		try {
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
@@ -63,8 +63,7 @@ public class JSONparser {
 		List<Feature> featureList = features.features();
 		ArrayList<Station> stationList = new ArrayList<>();
 		
-		for (int i = 0; i < featureList.size(); i++) {
-			Feature feature = featureList.get(i);
+		for (Feature feature : featureList) {
 			Point coordinates = (Point) feature.geometry();
 			
 			String id = feature.getStringProperty("id");

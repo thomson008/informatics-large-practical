@@ -20,13 +20,11 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-<!-- https://mvnrepository.com/artifact/com.mapbox.mapboxsdk/mapbox-sdk-geojson -->
-<dependency>
-    <groupId>com.mapbox.mapboxsdk</groupId>
-    <artifactId>mapbox-sdk-geojson</artifactId>
-    <version>4.9.0</version>
-</dependency>
-
+	<dependency>
+      <groupId>com.mapbox.mapboxsdk</groupId>
+      <artifactId>mapbox-sdk-geojson</artifactId>
+      <version>4.9.0</version>
+    </dependency>
   </dependencies>
   <version>1.0</version>
 </project>
