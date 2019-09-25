@@ -42,7 +42,4 @@ public class Station {
 	public void setCoins(double coins) {
 		this.coins = coins;
 	}
-	
-	
-
 }

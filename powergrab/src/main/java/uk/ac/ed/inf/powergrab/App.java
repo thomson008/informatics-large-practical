@@ -22,7 +22,6 @@ public class App {
         Drone drone;
         Position initialPosition = new Position(Double.parseDouble(args[3]), Double.parseDouble(args[4]));
         
-        
         if (args[6].equals("stateless"))
         	drone = new StatelessDrone(initialPosition);
         else if (args[6].equals("stateful"))

@@ -42,9 +42,30 @@ public class Position {
 		return latitudeOK && longitudeOK;
 	}
 	
+	/**
+	 * 
+	 * @param position Position of the other point on the map
+	 * @return	distance bewteen this position and the position of the other point
+	 */
 	public double getDistance(Position position) {		
 		double xDistance = this.longitude - position.longitude;
 		double yDistance = this.latitude - position.latitude;
 		return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+	}
+	
+	/**
+	 * 
+	 * @param stationPosition position of the station
+	 * @return angle in degrees between the drone and the station
+	 */
+	public double computeAngle(Position stationPosition) {
+		double deltaX = stationPosition.longitude - longitude;
+		double deltaY = stationPosition.latitude - latitude;
+		double angle = Math.atan2(deltaY, deltaX);
+		
+		if (deltaY < 0) 
+			angle += 2 * Math.PI;
+		
+		return Math.toDegrees(angle);
 	}
 }
