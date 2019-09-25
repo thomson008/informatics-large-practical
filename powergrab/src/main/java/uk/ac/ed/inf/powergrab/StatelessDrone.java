@@ -34,6 +34,8 @@ public class StatelessDrone extends Drone {
 			else {
 				double angleDirection = this.position.computeAngle(stationWithinRange.coordinates);
 				directionIdx = (int) Math.round(angleDirection / 22.5) + i;
+				if (stationWithinRange.markerSymbol.equals("danger"))
+						directionIdx = (directionIdx + 8) % 16;
 			}
 			
 			i++;
