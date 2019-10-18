@@ -15,7 +15,7 @@ import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 /**
  * 
- * @author th
+ * @author Tomek
  *
  */
 public class JSONparser {

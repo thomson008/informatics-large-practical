@@ -1,9 +1,12 @@
 package uk.ac.ed.inf.powergrab;
 
 import java.util.Arrays;
-import java.util.List;
 
-
+/**
+ * 
+ * @author Tomek
+ *
+ */
 public class StatelessDrone extends Drone {
 	public StatelessDrone(Position initialPosition) {
 		super(initialPosition);
@@ -15,14 +18,13 @@ public class StatelessDrone extends Drone {
 	 * @return Direction of the best move
 	 */
 	public Direction computeNextMove() {
-		List<Station> posStationsWithinMove = getPosStationsWithinMove();
-		List<Station> negStationsWithinMove = getNegStationsWithinMove();
-		Station stationWithinRange = getExchangeStation();
+		Station posStationWithinMove = getPosStationWithinMove();
+		Station negStationWithinMove = getNegStationWithinMove();
 		Direction direction;
 		int directionIdx;
 		Position nextPosition;
 
-		if (posStationsWithinMove.isEmpty() && negStationsWithinMove.isEmpty() || stationWithinRange != null) {
+		if (posStationWithinMove == null && negStationWithinMove == null) {
 			do {
 				directionIdx = App.random.nextInt(16);
 				direction = Direction.values()[directionIdx];
@@ -30,14 +32,20 @@ public class StatelessDrone extends Drone {
 			} while (!nextPosition.inPlayArea());
 		}
 		
-		else if (!posStationsWithinMove.isEmpty()) {
-			direction = position.computeDirection(posStationsWithinMove.get(0).coordinates);
+		else if (posStationWithinMove != null) {
+			direction = position.computeDirection(posStationWithinMove.coordinates);
 		}
 		
 		else {
-			Direction oppositeDirection = position.computeDirection(negStationsWithinMove.get(0).coordinates);
-			directionIdx = (Arrays.asList(Direction.values()).indexOf(oppositeDirection) + 8) % 16;
-			direction =  Direction.values()[directionIdx];
+			int i = 0;
+			do {
+				Direction oppositeDirection = position.computeDirection(negStationWithinMove.coordinates);
+				directionIdx = (Arrays.asList(Direction.values()).indexOf(oppositeDirection) + 8 + i) % 16;
+				direction =  Direction.values()[directionIdx];
+				nextPosition = position.nextPosition(direction);
+				i++;
+			} while (!nextPosition.inPlayArea());
+
 		}
 
 		return direction;

@@ -1,5 +1,10 @@
 package uk.ac.ed.inf.powergrab;
 
+/**
+ * 
+ * @author Tomek
+ *
+ */
 public class Position {
 	public double latitude;
 	public double longitude;
