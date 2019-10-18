@@ -42,4 +42,8 @@ public class Station {
 	public void setCoins(double coins) {
 		this.coins = coins;
 	}
+	
+	public boolean isPositive() {
+		return markerSymbol.equals("lighthouse");
+	}
 }

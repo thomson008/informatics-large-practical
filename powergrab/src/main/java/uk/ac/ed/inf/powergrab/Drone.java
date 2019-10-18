@@ -1,5 +1,10 @@
 package uk.ac.ed.inf.powergrab;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 public abstract class Drone {
 	public double power = 250.0;
 	private double coins = 0.0;
@@ -53,8 +58,6 @@ public abstract class Drone {
 		power = Math.max(0,  power + stationPower);
 		coins = Math.max(0, coins + stationCoins);
 		
-		System.out.println("power+" + stationPower + " " + station.id);
-		
 		station.updateSymbol();
 	}
 	
@@ -62,24 +65,77 @@ public abstract class Drone {
 		return (position.getDistance(station.coordinates) <= 0.00025);
 	}
 	
-	public Station hasStationWithinMove() {
-		Station stationWithinMove = null;
+	/**
+	 * Gets the list of all positively charged stations within a range of one move
+	 * Also checks if moving in that direction wouldn't cause the drone to move outside the play area
+	 * @return
+	 */
+	public List<Station> getPosStationsWithinMove() {
+		List<Station> stations = new ArrayList<>();
 		
 		for (Station station : App.stations) {
-			if (position.getDistance(station.coordinates) <= 0.0003)
-				stationWithinMove = station;	
+			double distance = position.getDistance(station.coordinates);
+			Direction dir = position.computeDirection(station.coordinates);
+			Position hypotheticalNextPos = position.nextPosition(dir);
+			if (distance <= 0.0003 && station.isPositive() && hypotheticalNextPos.inPlayArea())
+				stations.add(station);	
 		}
 		
-		return stationWithinMove;
+		stations.sort(new Comparator<Station>() {
+			public int compare(Station s1, Station s2) {
+				if (s1.getCoins() > s2.getCoins())
+					return -1;
+				else if (s1.getCoins() == s2.getCoins())
+					return 0;
+				else 
+					return -1;
+			}
+		});
+		
+		return stations;
 	}
 	
-	public Station hasStationWithinRange() {
-		Station stationWithinRange = null;
+	/**
+	 * Gets the list of all negatively charged stations within a range of one move
+	 * @return
+	 */
+	public List<Station> getNegStationsWithinMove() {
+		List<Station> stations = new ArrayList<>();
 		
 		for (Station station : App.stations) {
-			if (isWithinDistance(station))
-				stationWithinRange = station;	
+			if (position.getDistance(station.coordinates) <= 0.0003 && !station.isPositive())
+				stations.add(station);	
 		}
+		
+		return stations;
+	}
+	
+	/**
+	 * Gets a station to exchange with, if there is any
+	 * @return
+	 */
+	public Station getExchangeStation() {
+		List<Station> stationsWithinRange = new ArrayList<>();
+		for (Station station : App.stations) {
+			if (isWithinDistance(station))
+				stationsWithinRange.add(station);	
+		}
+		
+		if (stationsWithinRange.isEmpty())
+			return null;
+		
+		Station stationWithinRange = Collections.min(stationsWithinRange, new Comparator<Station>() {
+			public int compare (Station s1, Station s2) {
+				double dist1 = position.getDistance(s1.coordinates);
+				double dist2 = position.getDistance(s2.coordinates);
+				if (dist1 < dist2) 
+					return -1;
+				else if (dist1 == dist2)
+					return 0;
+				else 
+					return 1;
+			}
+		});
 		
 		return stationWithinRange;
 	}

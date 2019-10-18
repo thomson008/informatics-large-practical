@@ -68,4 +68,11 @@ public class Position {
 		
 		return Math.toDegrees(angle);
 	}
+	
+	public Direction computeDirection(Position stationPosition) {
+		double angle = computeAngle(stationPosition);
+		int directionIdx = ((int) Math.round(angle / 22.5)) % 16;
+		Direction direction = Direction.values()[directionIdx];
+		return direction;
+	}
 }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 /**
  * 
@@ -18,6 +19,11 @@ import com.mapbox.geojson.Point;
  *
  */
 public class JSONparser {
+	public static FeatureCollection features;
+	public static List<Feature> featureList;
+	public static List<Point> points = new ArrayList<>();
+	public static LineString ls;
+	public static Feature route;
 	/**
 	 * 
 	 * @param rd
@@ -59,8 +65,8 @@ public class JSONparser {
 	 */
 	public static List<Station> parseJson(String url) throws IOException {
 		String json = readJsonFromUrl(url);
-		FeatureCollection features = FeatureCollection.fromJson(json);
-		List<Feature> featureList = features.features();
+		features = FeatureCollection.fromJson(json);
+		featureList = features.features();
 		ArrayList<Station> stationList = new ArrayList<>();
 		
 		for (Feature feature : featureList) {
@@ -81,5 +87,13 @@ public class JSONparser {
 		}
 		
 		return stationList;
+	}
+	
+	public static FeatureCollection addRouteToFeatures() {
+		ls = LineString.fromLngLats(points);
+		route = Feature.fromGeometry(ls);
+		route.addProperty("", null);
+		featureList.add(route);
+		return FeatureCollection.fromFeatures(featureList);
 	}
 }
