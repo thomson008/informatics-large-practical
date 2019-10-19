@@ -71,7 +71,7 @@ public class App {
 			if ((stationWithinRange = drone.getExchangeStation()) != null) 
 				drone.exchangeWithStation(stationWithinRange);
 			
-			//Compute the direction from the next move
+			//Compute the direction for the next move
 			Direction nextDirection = drone.computeNextMove();
 			
 			//Get coordinates before making the move
