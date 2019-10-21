@@ -43,7 +43,7 @@ public class Position {
 	  */
 	public boolean inPlayArea() { 
 		boolean latitudeOK = this.latitude < 55.946233 && this.latitude > 55.942617;
-		boolean longitudeOK = this.longitude < -3.184319 && this.latitude > -3.192473;
+		boolean longitudeOK = this.longitude < -3.184319 && this.longitude > -3.192473;
 		return latitudeOK && longitudeOK;
 	}
 	
