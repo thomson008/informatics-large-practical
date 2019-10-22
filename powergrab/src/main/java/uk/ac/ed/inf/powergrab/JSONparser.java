@@ -73,8 +73,6 @@ public class JSONparser {
 			Point coordinates = (Point) feature.geometry();
 			
 			String id = feature.getStringProperty("id");
-			String symbol = feature.getStringProperty("marker-symbol");
-			String color = feature.getStringProperty("marker-color");
 			
 			double coins = feature.getNumberProperty("coins").doubleValue();
 			double power = feature.getNumberProperty("power").doubleValue();
@@ -82,7 +80,7 @@ public class JSONparser {
 			double latitude = coordinates.latitude();
 			
 			Position stationPosition = new Position(latitude, longitude);
-			Station newStation = new Station(id, stationPosition, coins, power, symbol, color);
+			Station newStation = new Station(id, stationPosition, coins, power);
 			stationList.add(newStation);
 		}
 		

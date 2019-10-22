@@ -62,8 +62,6 @@ public abstract class Drone {
 		
 		power = Math.max(0,  power + stationPower);
 		coins = Math.max(0, coins + stationCoins);
-		
-		station.updateSymbol();
 	}
 	
 	private boolean isWithinDistance(Station station) {
@@ -71,7 +69,6 @@ public abstract class Drone {
 	}
 	
 
-	
 	/**
 	 * Gets a station to exchange with, if there is any
 	 * @return
