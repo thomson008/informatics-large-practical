@@ -64,13 +64,12 @@ public class App {
 		int moves = 0;
 		Station stationWithinRange;
 		
+		//Exchange with a station if there is one in range
+		if ((stationWithinRange = drone.getExchangeStation()) != null) 
+			drone.exchangeWithStation(stationWithinRange);
+		
 		//Execute the loop if the conditions are fulfilled
 		while (drone.hasPower() && moves < 250) {
-			
-			//Exchange with a station if there is one in range
-			if ((stationWithinRange = drone.getExchangeStation()) != null) 
-				drone.exchangeWithStation(stationWithinRange);
-			
 			//Compute the direction for the next move
 			Direction nextDirection = drone.computeNextMove();
 			
@@ -82,6 +81,10 @@ public class App {
 			JSONparser.points.add(Point.fromLngLat(longitude, latitude));
 			
 			drone.makeMove(nextDirection);
+			
+			//Exchange with a station if there is one in range
+			if ((stationWithinRange = drone.getExchangeStation()) != null) 
+				drone.exchangeWithStation(stationWithinRange);
 			
 			//Get new coordinates (after making a move)
 			double newLatitude = drone.position.latitude;
