@@ -67,7 +67,7 @@ public class StatelessDrone extends Drone {
 			double distance = position.getDistance(station.coordinates);
 			Direction dir = position.computeDirection(station.coordinates);
 			Position hypotheticalNextPos = position.nextPosition(dir);
-			if (distance <= 0.0003 && station.getCoins() > 0 && hypotheticalNextPos.inPlayArea())
+			if (distance <= 0.00055 && station.getCoins() > 0 && hypotheticalNextPos.inPlayArea())
 				stations.add(station);	
 		}
 		
@@ -96,7 +96,7 @@ public class StatelessDrone extends Drone {
 		List<Station> stations = new ArrayList<>();
 		
 		for (Station station : App.stations) {
-			if (position.getDistance(station.coordinates) <= 0.0003 && !station.isPositive())
+			if (position.getDistance(station.coordinates) <= 0.00055 && !station.isPositive())
 				stations.add(station);	
 		}
 		

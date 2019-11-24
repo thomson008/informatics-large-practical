@@ -116,7 +116,7 @@ public class StatefulDrone extends Drone {
 		if (isWithinNegative(position.nextPosition(dir)) && !isWithinPositive(position.nextPosition(dir))) {
 			int idx = dir.ordinal();
 			int idx_l = (idx + 3) % 16;
-			int idx_r = ((idx - 3) % 16 + 16) % 16;
+			int idx_r = (idx + 13) % 16;
 			Direction dir_l = Direction.values()[idx_l];
 			Direction dir_r = Direction.values()[idx_r];
 			
