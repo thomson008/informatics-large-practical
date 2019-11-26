@@ -16,7 +16,6 @@ import com.mapbox.geojson.Point;
  *
  */
 public class App {
-	public static Random random;
 	public static List<Station> stations;
 	public static Drone drone;
 	public static String date;
@@ -42,7 +41,7 @@ public class App {
         stations = JSONparser.parseJson(jsonURL);
         
         //Initialise random with the seed given as input argument
-        random = new Random(Integer.parseInt(args[5]));
+        int seed = Integer.parseInt(args[5]);
         
         //Set the initial position of the drone according to input param
         Position initialPosition = new Position(Double.parseDouble(args[3]), Double.parseDouble(args[4]));
@@ -50,11 +49,11 @@ public class App {
         // Initialise an appropriate type of drone
         droneType = args[6];
         if (droneType.equals("stateless")) 
-        	drone = new StatelessDrone(initialPosition);
+        	drone = new StatelessDrone(initialPosition, new Random(seed));
         else if (droneType.equals("stateful"))
-        	drone = (StatefulDrone) new StatefulDrone(initialPosition);
+        	drone = (StatefulDrone) new StatefulDrone(initialPosition, new Random(seed));
         else
-        	drone = new StatelessDrone(initialPosition);	
+        	drone = new StatelessDrone(initialPosition, new Random(seed));	
         
         //Start the game
         playGame();

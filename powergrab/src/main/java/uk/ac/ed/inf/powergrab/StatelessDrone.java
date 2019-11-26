@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * 
@@ -12,9 +13,8 @@ import java.util.List;
  *
  */
 public class StatelessDrone extends Drone {
-	public StatelessDrone(Position initialPosition) {
-		super(initialPosition);
-		this.position = initialPosition;
+	public StatelessDrone(Position initialPosition, Random random) {
+		super(initialPosition, random);
 	}
 	
 	/**
@@ -30,7 +30,7 @@ public class StatelessDrone extends Drone {
 
 		if (posStationWithinMove == null && negStationWithinMove == null) {
 			do {
-				directionIdx = App.random.nextInt(16);
+				directionIdx = random.nextInt(16);
 				direction = Direction.values()[directionIdx];
 				nextPosition = position.nextPosition(direction);
 			} while (!nextPosition.inPlayArea());

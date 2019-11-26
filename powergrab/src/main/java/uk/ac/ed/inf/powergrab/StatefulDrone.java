@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 public class StatefulDrone extends Drone {
 	List<Station> stationsToVisit = new ArrayList<>();
 	Station currentTarget;
 
-	public StatefulDrone(Position initialPosition) {
-		super(initialPosition);
+	public StatefulDrone(Position initialPosition, Random random) {
+		super(initialPosition, random);
 		
 		// Get all the positive stations on the map
 		for (Station s : App.stations) {
@@ -74,7 +75,7 @@ public class StatefulDrone extends Drone {
 		Direction dir;
 		
 		do {
-			dir = Direction.values()[App.random.nextInt(16)];
+			dir = Direction.values()[random.nextInt(16)];
 		} while (!position.nextPosition(dir).inPlayArea());
 		
 		return getDodgeDirection(dir);

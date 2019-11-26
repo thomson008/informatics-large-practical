@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * 
@@ -14,6 +15,7 @@ public abstract class Drone {
 	public double power = 250.0;
 	private double coins = 0.0;
 	protected Position position;
+	protected Random random;
 	
 	/**
 	 * getter for coins
@@ -31,8 +33,9 @@ public abstract class Drone {
 		return power >= 1.25;
 	}
 	
-	public Drone(Position initialPosition) {
+	public Drone(Position initialPosition, Random random) {
 		position = initialPosition;
+		this.random = random;
 	}
 	
 	/**
