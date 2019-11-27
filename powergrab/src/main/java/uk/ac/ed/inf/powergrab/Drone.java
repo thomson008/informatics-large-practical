@@ -43,11 +43,14 @@ public abstract class Drone {
 	 * @param dir Wind direction in which a drone is supposed to move
 	 */
 	public void makeMove(Direction dir) {
-		Position nextPosition =  position.nextPosition(dir);
-		position = nextPosition;
+		position =  position.nextPosition(dir);
 		power -= 1.25;
 	}
 
+	/**
+	 * Default method, in fact is never used because its overridden by Stateless or Stateful
+	 * @return
+	 */
 	public Direction computeNextMove() {
 		return Direction.N;
 	}

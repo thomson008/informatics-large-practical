@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Random;
 
 public class StatefulDrone extends Drone {
-	List<Station> stationsToVisit = new ArrayList<>();
-	Station currentTarget;
+	private List<Station> stationsToVisit = new ArrayList<>();
+	private Station currentTarget;
 
 	public StatefulDrone(Position initialPosition, Random random) {
 		super(initialPosition, random);
@@ -22,7 +22,7 @@ public class StatefulDrone extends Drone {
 	}
 	
 	public Direction computeNextMove() {
-		if (stationsToVisit.isEmpty() && position.getDistance(currentTarget.coordinates) <= 0.00025) 
+		if (stationsToVisit.isEmpty() && position.getDistance(currentTarget.coordinates) <= 0.00025)
 			return safeDirection();
 		
 		Direction dir;
@@ -41,19 +41,9 @@ public class StatefulDrone extends Drone {
 				}
 			});
 			
-			int statIdx = 0;
-			Station candidate;
-			
-			// Start from the closest and look for the station that won't take the drone out of range
-			do {
-				candidate = stationsToVisit.get(statIdx);
-				dir = this.position.computeDirection(candidate.coordinates);
-				statIdx++;
-			} while (!position.nextPosition(dir).inPlayArea());
-			
-			// Set the target to the station selected above and remove it from the list of targets for the future
-			currentTarget = candidate;
-			stationsToVisit.remove(statIdx - 1);
+			currentTarget = stationsToVisit.get(0);
+			stationsToVisit.remove(0);
+			dir = position.computeDirection(currentTarget.coordinates);
 		}
 		
 		// Else, so if the target is currently set, go in the direction of it
@@ -78,7 +68,7 @@ public class StatefulDrone extends Drone {
 			dir = Direction.values()[random.nextInt(16)];
 		} while (!position.nextPosition(dir).inPlayArea());
 		
-		return getDodgeDirection(dir);
+		return dir;
 	}	
 	
 	/**
@@ -116,15 +106,11 @@ public class StatefulDrone extends Drone {
 	private Direction getDodgeDirection(Direction dir) {
 		if (isWithinNegative(position.nextPosition(dir)) && !isWithinPositive(position.nextPosition(dir))) {
 			int idx = dir.ordinal();
-			int idx_l = (idx + 3) % 16;
-			int idx_r = (idx + 13) % 16;
-			Direction dir_l = Direction.values()[idx_l];
-			Direction dir_r = Direction.values()[idx_r];
 			
-			if (!position.nextPosition(dir_l).inPlayArea() && !position.nextPosition(dir_l).inPlayArea())
-				return dir;
-			
-			return position.nextPosition(dir_l).inPlayArea() ? dir_l : dir_r;
+			do {
+				idx = (idx + 1) % 16;
+			    dir = Direction.values()[idx];
+			} while (!position.nextPosition(dir).inPlayArea() || isWithinNegative(position.nextPosition(dir)));
 		}
 		
 		return dir;

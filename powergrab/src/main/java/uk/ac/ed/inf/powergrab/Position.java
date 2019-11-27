@@ -80,4 +80,12 @@ public class Position {
 		Direction direction = Direction.values()[directionIdx];
 		return direction;
 	}
+
+	public boolean inNegativeRange() {
+		for (Station s : App.stations) {
+			if (!s.isPositive() && getDistance(s.coordinates) <= 0.00025)
+				return true;
+		}
+		return false;
+	}
 }
