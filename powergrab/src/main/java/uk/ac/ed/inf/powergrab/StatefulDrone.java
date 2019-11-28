@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 public class StatefulDrone extends Drone {
-	private List<Station> stationsToVisit = new ArrayList<>();
+	public List<Station> stationsToVisit = new ArrayList<>();
 	private Station currentTarget;
 
 	public StatefulDrone(Position initialPosition, Random random) {
@@ -28,10 +28,11 @@ public class StatefulDrone extends Drone {
 		Direction dir;
 		
 		// If the target has not been set yet or has just been reached
-		if (currentTarget == null || position.getDistance(currentTarget.coordinates) <= 0.00025) {
+		if (currentTarget == null || isWithinDistance(currentTarget)) {
+
 			
 			// Sort the stations in ascending distance order
-			Collections.sort(stationsToVisit, new Comparator<Station>() {
+			currentTarget = Collections.min(stationsToVisit, new Comparator<Station>() {
 				public int compare(Station s1, Station s2) {
 					if (position.getDistance(s1.coordinates) < position.getDistance(s2.coordinates))
 						return -1;
@@ -41,21 +42,15 @@ public class StatefulDrone extends Drone {
 				}
 			});
 			
-			currentTarget = stationsToVisit.get(0);
-			stationsToVisit.remove(0);
-			dir = position.computeDirection(currentTarget.coordinates);
+			stationsToVisit.remove(currentTarget);
 		}
 		
-		// Else, so if the target is currently set, go in the direction of it
-		else  {
-			dir = position.computeDirection(currentTarget.coordinates);
-			
-			// If that direction is out of range, go randomly
-			if (!position.nextPosition(dir).inPlayArea()) dir = randomDirection();	
-		}
+		dir = position.computeDirection(currentTarget.coordinates);
+		if (!position.nextPosition(dir).inPlayArea()) dir = randomDirection();	
 
 		return getDodgeDirection(dir);
 	}
+	
 	
 	/**
 	 * Generates random direction
@@ -85,16 +80,34 @@ public class StatefulDrone extends Drone {
 	}
 	
 	/**
-	 * <p> Checks if there is a negative station within charging distance
+	 * <p> Checks if the potential dodge position will improve the situation
 	 * @param pos
-	 * @return boolean, true if there is such station, false otherwise
+	 * @return boolean, true if yes, false otherwise
 	 */
-	private boolean isWithinPositive(Position pos) {
+	private boolean isBetterPosition(Position pos) {
+		Station closest = Collections.min(App.stations, new Comparator<Station>() {
+			public int compare (Station s1, Station s2) {
+				double dist1 = pos.getDistance(s1.coordinates);
+				double dist2 = pos.getDistance(s2.coordinates);
+				if (dist1 < dist2) 
+					return -1;
+				else if (dist1 == dist2)
+					return 0;
+				else 
+					return 1;
+			}
+		});
+		
+		boolean isWithinNeg = false;
 		for (Station s : App.stations) {
-			if (pos.getDistance(s.coordinates) <= 0.00025 && s.getCoins() >= 0 && s.getPower() >= 0)
-				return true;
+			if (pos.getDistance(s.coordinates) <= 0.00025 && (s.getCoins() < 0 || s.getPower() < 0))  {
+				isWithinNeg = true;
+				break;
+			}
+
 		}
-		return false;
+		
+		return (closest.isPositive() || !isWithinNeg) && pos.inPlayArea();
 	}
 	
 	/**
@@ -104,13 +117,19 @@ public class StatefulDrone extends Drone {
 	 * @return Direction, possibly altered for a dodge
 	 */
 	private Direction getDodgeDirection(Direction dir) {
-		if (isWithinNegative(position.nextPosition(dir)) && !isWithinPositive(position.nextPosition(dir))) {
+		if (!isBetterPosition(position.nextPosition(dir))) {
 			int idx = dir.ordinal();
+			int newIdx;
 			
-			do {
-				idx = (idx + 1) % 16;
-			    dir = Direction.values()[idx];
-			} while (!position.nextPosition(dir).inPlayArea() || isWithinNegative(position.nextPosition(dir)));
+			for (int i = 0; i < 16; i++) {
+				newIdx = (i + idx) % 16;
+
+				Direction testDir = Direction.values()[newIdx];
+				if (isBetterPosition(position.nextPosition(testDir)) &&
+					position.nextPosition(testDir).getDistance(currentTarget.coordinates) < 
+					position.getDistance(currentTarget.coordinates)) 
+					dir = testDir;
+			}
 		}
 		
 		return dir;
@@ -122,7 +141,6 @@ public class StatefulDrone extends Drone {
 				return d;
 			}
 		}
-		
 		return null;
 	}
 }

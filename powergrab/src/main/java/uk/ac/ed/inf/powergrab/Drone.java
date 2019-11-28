@@ -70,7 +70,7 @@ public abstract class Drone {
 		coins = Math.max(0, coins + stationCoins);
 	}
 	
-	private boolean isWithinDistance(Station station) {
+	protected boolean isWithinDistance(Station station) {
 		return (position.getDistance(station.coordinates) <= 0.00025);
 	}
 	
