@@ -8,6 +8,7 @@ import java.util.Random;
 
 public class StatefulDrone extends Drone {
 	private List<Station> stationsToVisit = new ArrayList<>();
+	private List<Station> failedToVisit = new ArrayList<>();
 	private Station currentTarget;
 
 	public StatefulDrone(Position initialPosition, Random random) {
@@ -22,17 +23,20 @@ public class StatefulDrone extends Drone {
 	}
 	
 	public Direction computeNextMove() {
-		if (stationsToVisit.isEmpty() && position.getDistance(currentTarget.coordinates) <= 0.00025)
+		if (stationsToVisit.isEmpty() && failedToVisit.isEmpty() && position.getDistance(currentTarget.coordinates) <= 0.00025)
 			return safeDirection();
 		
 		Direction dir;
 		
 		// If the target has not been set yet or has just been reached
 		if (currentTarget == null || isWithinDistance(currentTarget)) {
-			Station previousTarget = currentTarget;
+			/* If the exchange station is not as expected, add the current target to a list of stations
+			 that were failed to collect. The drone will come back to it in the end in order to avoid
+			 getting stuck */
+			if (currentTarget != null && currentTarget != getExchangeStation())
+				failedToVisit.add(currentTarget);
 			
-			// Find a new target by looking for the closest positive station
-			currentTarget = Collections.min(stationsToVisit, new Comparator<Station>() {
+			Comparator<Station> stationCmp = new Comparator<Station>() {
 				public int compare(Station s1, Station s2) {
 					if (position.getDistance(s1.coordinates) < position.getDistance(s2.coordinates))
 						return -1;
@@ -40,15 +44,20 @@ public class StatefulDrone extends Drone {
 						return 1;
 					return 0;
 				}
-			});
+			};
 			
-			if (previousTarget != null && previousTarget != getExchangeStation())
-				stationsToVisit.add(previousTarget);
-			
-			stationsToVisit.remove(currentTarget);
-			
+			// Find a new target by looking for the closest positive station
+			if (!stationsToVisit.isEmpty()) {
+				currentTarget = Collections.min(stationsToVisit, stationCmp);
+				stationsToVisit.remove(currentTarget);
+			}
+			else {
+				currentTarget = Collections.min(failedToVisit, stationCmp);
+				failedToVisit.remove(currentTarget);
+			}
 		}
 		
+		stationsToVisit.remove(getExchangeStation());
 		dir = position.computeDirection(currentTarget.coordinates);
 
 		return getDodgeDirection(dir);
