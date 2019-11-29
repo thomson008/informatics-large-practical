@@ -17,16 +17,12 @@ import com.mapbox.geojson.Point;
  */
 public class App {
 	public static List<Station> stations;
-	public static Drone drone;
-	public static String date;
-	public static String droneType;
-	
-	public static String outputJson;
-	public static FeatureCollection finalJSON;
-	public static String movesLog = "";
+	private static Drone drone;
+	private static String date;
+	private static String droneType;
+	private static FeatureCollection finalJSON;
+	private static String movesLog = "";
 
-
-	
     public static void main(String[] args) throws IOException {
     	String jsonURL = "http://homepages.inf.ed.ac.uk/stg/powergrab/";
     	
@@ -69,6 +65,7 @@ public class App {
 		
 		//Execute the loop if the conditions are fulfilled
 		while (drone.hasPower() && moves < 250) {
+			System.out.println(moves+1);
 			//Compute the direction for the next move
 			Direction nextDirection = drone.computeNextMove();
 			
@@ -91,7 +88,7 @@ public class App {
 			
 			//Add the move to the log String
 			movesLog += String.format("%f, %f, %s, %f, %f, %.1f, %.2f\n", latitude, longitude, 
-					nextDirection.toString(), newLatitude, newLongitude, drone.getCoins(), drone.power);
+					nextDirection.toString(), newLatitude, newLongitude, drone.getCoins(), drone.getPower());
 
 			moves++;
 		}
@@ -99,7 +96,7 @@ public class App {
 		generateFiles();
 	}
 	
-	public static void generateFiles() {
+	private static void generateFiles() {
 		//Add the last Point to Points list (it won't be added in the loop because the move is done after appending)
 		JSONparser.points.add(Point.fromLngLat(drone.position.longitude, drone.position.latitude));
 		

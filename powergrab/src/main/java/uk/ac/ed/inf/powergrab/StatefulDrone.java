@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 public class StatefulDrone extends Drone {
-	public List<Station> stationsToVisit = new ArrayList<>();
+	private List<Station> stationsToVisit = new ArrayList<>();
 	private Station currentTarget;
 
 	public StatefulDrone(Position initialPosition, Random random) {
@@ -29,9 +29,9 @@ public class StatefulDrone extends Drone {
 		
 		// If the target has not been set yet or has just been reached
 		if (currentTarget == null || isWithinDistance(currentTarget)) {
-
+			Station previousTarget = currentTarget;
 			
-			// Sort the stations in ascending distance order
+			// Find a new target by looking for the closest positive station
 			currentTarget = Collections.min(stationsToVisit, new Comparator<Station>() {
 				public int compare(Station s1, Station s2) {
 					if (position.getDistance(s1.coordinates) < position.getDistance(s2.coordinates))
@@ -42,11 +42,14 @@ public class StatefulDrone extends Drone {
 				}
 			});
 			
+			if (previousTarget != null && previousTarget != getExchangeStation())
+				stationsToVisit.add(previousTarget);
+			
 			stationsToVisit.remove(currentTarget);
+			
 		}
 		
 		dir = position.computeDirection(currentTarget.coordinates);
-		if (!position.nextPosition(dir).inPlayArea()) dir = randomDirection();	
 
 		return getDodgeDirection(dir);
 	}
@@ -84,7 +87,7 @@ public class StatefulDrone extends Drone {
 	 * @param pos
 	 * @return boolean, true if yes, false otherwise
 	 */
-	private boolean isBetterPosition(Position pos) {
+	private boolean isSafePosition(Position pos) {
 		Station closest = Collections.min(App.stations, new Comparator<Station>() {
 			public int compare (Station s1, Station s2) {
 				double dist1 = pos.getDistance(s1.coordinates);
@@ -117,30 +120,72 @@ public class StatefulDrone extends Drone {
 	 * @return Direction, possibly altered for a dodge
 	 */
 	private Direction getDodgeDirection(Direction dir) {
-		if (!isBetterPosition(position.nextPosition(dir))) {
+		if (!isSafePosition(position.nextPosition(dir))) {
 			int idx = dir.ordinal();
 			int newIdx;
+			boolean foundSafe = false;
 			
 			for (int i = 0; i < 16; i++) {
 				newIdx = (i + idx) % 16;
 
 				Direction testDir = Direction.values()[newIdx];
-				if (isBetterPosition(position.nextPosition(testDir)) &&
+				if (isSafePosition(position.nextPosition(testDir)) &&
 					position.nextPosition(testDir).getDistance(currentTarget.coordinates) < 
-					position.getDistance(currentTarget.coordinates)) 
+					position.getDistance(currentTarget.coordinates)) {
 					dir = testDir;
+					foundSafe = true;
+				}
 			}
+			
+			// If a safe direction was not found, go to the least negative station.
+			if (!foundSafe) dir = bestNegative(dir);
 		}
 		
 		return dir;
 	}
 	
+	/**
+	 * Gives the direction of the least negative station, in case there is no way to avoid a negative one
+	 * @return
+	 */
+	private Direction bestNegative(Direction dir) {
+		List<Station> stations = new ArrayList<>();
+
+		for (Station station : App.stations) {
+			int dirIdx = dir.ordinal();
+			int newDirIdx = position.computeDirection(station.coordinates).ordinal();
+			
+			int idxDiff = Math.abs(dirIdx - newDirIdx);
+			if (idxDiff > 8) idxDiff = 16 - idxDiff;
+			
+			if (position.getDistance(station.coordinates) <= 0.00055 && !station.isPositive() && idxDiff < 4) 
+				stations.add(station);	
+		}
+
+		Station bestStation = Collections.max(stations, new Comparator<Station>() {
+			public int compare(Station s1, Station s2) {
+				if (s1.getCoins() + s1.getPower() < s2.getCoins() + s2.getPower())
+					return -1;
+				else if (s1.getCoins() == s2.getCoins())
+					return 0;
+				else 
+					return 1;
+			}
+		});
+
+		return position.computeDirection(bestStation.coordinates);
+	}
+
+	/**
+	 * Finds a safe direction for a flight, used when all coins are collected
+	 * @return
+	 */
 	private Direction safeDirection() {
 		for (Direction d : Direction.values()) {
 			if (!isWithinNegative(position.nextPosition(d)) && position.nextPosition(d).inPlayArea()) {
 				return d;
 			}
 		}
-		return null;
+		return getDodgeDirection(randomDirection());
 	}
 }

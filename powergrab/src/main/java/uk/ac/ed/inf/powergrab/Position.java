@@ -33,7 +33,7 @@ public class Position {
 		double deltaLat = 0.0003 * Math.sin(radianAngle);
 		double deltaLong = 0.0003 * Math.cos(radianAngle);
 		
-		Position newPosition = new Position(this.latitude + deltaLat, this.longitude + deltaLong);
+		Position newPosition = new Position(latitude + deltaLat, longitude + deltaLong);
 		
 		return newPosition;
 	}
@@ -42,8 +42,8 @@ public class Position {
 	  * @return boolean, true if drone is within the play area, false if it is outside
 	  */
 	public boolean inPlayArea() { 
-		boolean latitudeOK = this.latitude < 55.946233 && this.latitude > 55.942617;
-		boolean longitudeOK = this.longitude < -3.184319 && this.longitude > -3.192473;
+		boolean latitudeOK = latitude < 55.946233 && latitude > 55.942617;
+		boolean longitudeOK = longitude < -3.184319 && longitude > -3.192473;
 		return latitudeOK && longitudeOK;
 	}
 	
@@ -53,8 +53,8 @@ public class Position {
 	 * @return	distance bewteen this position and the position of the other point
 	 */
 	public double getDistance(Position position) {		
-		double xDistance = this.longitude - position.longitude;
-		double yDistance = this.latitude - position.latitude;
+		double xDistance = longitude - position.longitude;
+		double yDistance = latitude - position.latitude;
 		return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 	}
 	
@@ -63,7 +63,7 @@ public class Position {
 	 * @param stationPosition position of the station
 	 * @return angle in degrees between the drone and the station
 	 */
-	public double computeAngle(Position stationPosition) {
+	private double computeAngle(Position stationPosition) {
 		double deltaX = stationPosition.longitude - longitude;
 		double deltaY = stationPosition.latitude - latitude;
 		double angle = Math.atan2(deltaY, deltaX);
@@ -81,6 +81,10 @@ public class Position {
 		return direction;
 	}
 
+	/**
+	 * Checks if the position is in the range of at least one negative station
+	 * @return
+	 */
 	public boolean inNegativeRange() {
 		for (Station s : App.stations) {
 			if (!s.isPositive() && getDistance(s.coordinates) <= 0.00025)

@@ -12,7 +12,7 @@ import java.util.Random;
  *
  */
 public abstract class Drone {
-	public double power = 250.0;
+	private double power = 250.0;
 	private double coins = 0.0;
 	protected Position position;
 	protected Random random;
@@ -23,6 +23,10 @@ public abstract class Drone {
 
 	public double getCoins() {
 		return coins;
+	}
+	
+	public double getPower() {
+		return power;
 	}
 	
 	/**
