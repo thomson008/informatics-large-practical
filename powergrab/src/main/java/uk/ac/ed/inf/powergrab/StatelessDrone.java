@@ -2,7 +2,6 @@ package uk.ac.ed.inf.powergrab;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -34,9 +33,9 @@ public class StatelessDrone extends Drone {
 			} while (!nextPosition.inPlayArea() || nextPosition.inNegativeRange());
 		}
 		
-		else  {
+		else  
 			direction = position.computeDirection(posStationWithinMove.coordinates);
-		}
+		
 		
 		return direction;
 	}
@@ -53,23 +52,14 @@ public class StatelessDrone extends Drone {
 			double distance = position.getDistance(station.coordinates);
 			Direction dir = position.computeDirection(station.coordinates);
 			Position hypotheticalNextPos = position.nextPosition(dir);
-			if (distance <= 0.00055 && station.getCoins() > 0 && hypotheticalNextPos.inPlayArea())
+			if (distance <= 0.00055 && (station.getCoins() > 0 || station.getPower() > 0) && hypotheticalNextPos.inPlayArea())
 				stations.add(station);	
 		}
 		
 		if (stations.isEmpty())
 			return null;
 		
-		Station bestStation = Collections.max(stations, new Comparator<Station>() {
-			public int compare(Station s1, Station s2) {
-				if (s1.getCoins() < s2.getCoins())
-					return -1;
-				else if (s1.getCoins() == s2.getCoins())
-					return 0;
-				else 
-					return -1;
-			}
-		});
+		Station bestStation = Collections.max(stations, itemsCmp);
 		
 		return bestStation;
 	}

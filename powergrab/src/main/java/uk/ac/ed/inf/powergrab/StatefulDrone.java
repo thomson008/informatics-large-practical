@@ -2,7 +2,6 @@ package uk.ac.ed.inf.powergrab;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -10,7 +9,7 @@ public class StatefulDrone extends Drone {
 	private List<Station> stationsToVisit = new ArrayList<>();
 	private List<Station> failedToVisit = new ArrayList<>();
 	private Station currentTarget;
-
+	
 	public StatefulDrone(Position initialPosition, Random random) {
 		super(initialPosition, random);
 		
@@ -26,39 +25,38 @@ public class StatefulDrone extends Drone {
 		if (stationsToVisit.isEmpty() && failedToVisit.isEmpty() && position.getDistance(currentTarget.coordinates) <= 0.00025)
 			return safeDirection();
 		
-		Direction dir;
+		Direction dir = null;
 		
 		// If the target has not been set yet or has just been reached
 		if (currentTarget == null || isWithinDistance(currentTarget)) {
 			/* If the exchange station is not as expected, add the current target to a list of stations
 			 that were failed to collect. The drone will come back to it in the end in order to avoid
 			 getting stuck */
-			if (currentTarget != null && currentTarget != getExchangeStation())
-				failedToVisit.add(currentTarget);
-			
-			Comparator<Station> stationCmp = new Comparator<Station>() {
-				public int compare(Station s1, Station s2) {
-					if (position.getDistance(s1.coordinates) < position.getDistance(s2.coordinates))
-						return -1;
-					else if (position.getDistance(s1.coordinates) > position.getDistance(s2.coordinates))
-						return 1;
-					return 0;
-				}
-			};
+			if (currentTarget != null && currentTarget != getExchangeStation()) {
+				// Try to go to a place that will allow exchange with that station
+				dir = finalDirection();
+				failedToVisit.add(currentTarget);	
+			}
 			
 			// Find a new target by looking for the closest positive station
 			if (!stationsToVisit.isEmpty()) {
-				currentTarget = Collections.min(stationsToVisit, stationCmp);
+				currentTarget = Collections.min(stationsToVisit, position.distanceCmp);
 				stationsToVisit.remove(currentTarget);
 			}
 			else {
-				currentTarget = Collections.min(failedToVisit, stationCmp);
+				currentTarget = Collections.min(failedToVisit, position.distanceCmp);
 				failedToVisit.remove(currentTarget);
 			}
 		}
 		
+		// In case a station was accidentally crossed, remove them from both lists
 		stationsToVisit.remove(getExchangeStation());
-		dir = position.computeDirection(currentTarget.coordinates);
+		failedToVisit.remove(getExchangeStation());
+		
+		if (dir == null) {
+			dir = position.computeDirection(currentTarget.coordinates);
+			if (!position.nextPosition(dir).inPlayArea()) dir = randomDirection();
+		}
 
 		return getDodgeDirection(dir);
 	}
@@ -76,7 +74,17 @@ public class StatefulDrone extends Drone {
 		} while (!position.nextPosition(dir).inPlayArea());
 		
 		return dir;
-	}	
+	}
+	
+	private Direction finalDirection() {
+		for (int i = 0; i < 16; i++) {
+			Direction dir = Direction.values()[i];
+			Position next = position.nextPosition(dir);
+			if (next.getClosest() == currentTarget && next.getDistance(currentTarget.coordinates) <= 0.00025)
+				return dir;
+		}
+		return null;
+	}
 	
 	/**
 	 * <p> Checks if there is a negative station within charging distance
@@ -97,18 +105,7 @@ public class StatefulDrone extends Drone {
 	 * @return boolean, true if yes, false otherwise
 	 */
 	private boolean isSafePosition(Position pos) {
-		Station closest = Collections.min(App.stations, new Comparator<Station>() {
-			public int compare (Station s1, Station s2) {
-				double dist1 = pos.getDistance(s1.coordinates);
-				double dist2 = pos.getDistance(s2.coordinates);
-				if (dist1 < dist2) 
-					return -1;
-				else if (dist1 == dist2)
-					return 0;
-				else 
-					return 1;
-			}
-		});
+		Station closest = Collections.min(App.stations, pos.distanceCmp);
 		
 		boolean isWithinNeg = false;
 		for (Station s : App.stations) {
@@ -143,6 +140,7 @@ public class StatefulDrone extends Drone {
 					position.getDistance(currentTarget.coordinates)) {
 					dir = testDir;
 					foundSafe = true;
+
 				}
 			}
 			
@@ -171,16 +169,7 @@ public class StatefulDrone extends Drone {
 				stations.add(station);	
 		}
 
-		Station bestStation = Collections.max(stations, new Comparator<Station>() {
-			public int compare(Station s1, Station s2) {
-				if (s1.getCoins() + s1.getPower() < s2.getCoins() + s2.getPower())
-					return -1;
-				else if (s1.getCoins() == s2.getCoins())
-					return 0;
-				else 
-					return 1;
-			}
-		});
+		Station bestStation = Collections.max(stations, itemsCmp);
 
 		return position.computeDirection(bestStation.coordinates);
 	}

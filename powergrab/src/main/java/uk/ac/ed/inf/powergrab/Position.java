@@ -1,5 +1,9 @@
 package uk.ac.ed.inf.powergrab;
 
+import java.util.Collections;
+import java.util.Comparator;
+
+
 /**
  * 
  * @author Tomek
@@ -8,6 +12,16 @@ package uk.ac.ed.inf.powergrab;
 public class Position {
 	public double latitude;
 	public double longitude;
+	protected Comparator<Station> distanceCmp = new Comparator<Station>() {
+		public int compare(Station s1, Station s2) {
+			if (getDistance(s1.coordinates) < getDistance(s2.coordinates))
+				return -1;
+			else if (getDistance(s1.coordinates) > getDistance(s2.coordinates))
+				return 1;
+			else
+				return 0;
+		}
+	};
 
 	/**
 	 * Constructor. Initiates the Position object with geographical coordinates
@@ -91,5 +105,26 @@ public class Position {
 				return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Returns a station closest to the position denoted by this latitude and longitude
+	 * @return
+	 */
+	public Station getClosest() {
+		Station closest = Collections.min(App.stations, new Comparator<Station>() {
+			public int compare (Station s1, Station s2) {
+				double dist1 = getDistance(s1.coordinates);
+				double dist2 = getDistance(s2.coordinates);
+				if (dist1 < dist2) 
+					return -1;
+				else if (dist1 == dist2)
+					return 0;
+				else 
+					return 1;
+			}
+		});
+		
+		return closest;
 	}
 }

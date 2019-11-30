@@ -93,6 +93,7 @@ public class App {
 		}
 		
 		generateFiles();
+		System.out.println("Flightpath simulated. All files successfully generated.");
 	}
 	
 	private static void generateFiles() {

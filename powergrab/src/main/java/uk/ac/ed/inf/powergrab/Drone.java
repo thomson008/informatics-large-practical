@@ -17,6 +17,18 @@ public abstract class Drone {
 	protected Position position;
 	protected Random random;
 	
+
+	protected Comparator<Station> itemsCmp = new Comparator<Station>() {
+		public int compare(Station s1, Station s2) {
+			if (s1.getCoins() + s1.getPower() < s2.getCoins() + s2.getPower())
+				return -1;
+			else if (s1.getCoins() == s2.getCoins())
+				return 0;
+			else 
+				return 1;
+		}
+	};
+	
 	/**
 	 * getter for coins
 	 */
@@ -93,18 +105,7 @@ public abstract class Drone {
 		if (stationsWithinRange.isEmpty())
 			return null;
 		
-		Station stationWithinRange = Collections.min(stationsWithinRange, new Comparator<Station>() {
-			public int compare (Station s1, Station s2) {
-				double dist1 = position.getDistance(s1.coordinates);
-				double dist2 = position.getDistance(s2.coordinates);
-				if (dist1 < dist2) 
-					return -1;
-				else if (dist1 == dist2)
-					return 0;
-				else 
-					return 1;
-			}
-		});
+		Station stationWithinRange = Collections.min(stationsWithinRange, position.distanceCmp);
 		
 		return stationWithinRange;
 	}
