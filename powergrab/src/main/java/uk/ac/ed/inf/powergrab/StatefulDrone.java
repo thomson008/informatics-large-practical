@@ -22,7 +22,11 @@ public class StatefulDrone extends Drone {
 	}
 	
 	public Direction computeNextMove() {
-		if (stationsToVisit.isEmpty() && failedToVisit.isEmpty() && position.getDistance(currentTarget.coordinates) <= 0.00025)
+		// In case a station was accidentally crossed, remove them from both lists
+		stationsToVisit.remove(getExchangeStation());
+		failedToVisit.remove(getExchangeStation());
+		
+		if (stationsToVisit.isEmpty() && failedToVisit.isEmpty() && getExchangeStation() == currentTarget)
 			return safeDirection();
 		
 		Direction dir = null;
@@ -43,15 +47,11 @@ public class StatefulDrone extends Drone {
 				currentTarget = Collections.min(stationsToVisit, position.distanceCmp);
 				stationsToVisit.remove(currentTarget);
 			}
-			else {
+			else if (!failedToVisit.isEmpty()) {
 				currentTarget = Collections.min(failedToVisit, position.distanceCmp);
 				failedToVisit.remove(currentTarget);
 			}
 		}
-		
-		// In case a station was accidentally crossed, remove them from both lists
-		stationsToVisit.remove(getExchangeStation());
-		failedToVisit.remove(getExchangeStation());
 		
 		if (dir == null && position.getDistance(currentTarget.coordinates) <= 0.00055 
 			&& !isWithinDistance(currentTarget))
