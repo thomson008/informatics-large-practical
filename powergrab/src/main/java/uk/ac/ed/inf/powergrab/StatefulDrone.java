@@ -133,9 +133,7 @@ public class StatefulDrone extends Drone {
 	 */
 	private Direction getDodgeDirection(Direction dir) {
 		if (!isSafePosition(position.nextPosition(dir))) {
-			System.out.println("random");
 			int idx = dir.ordinal();
-			System.out.println(idx);
 			int newIdx;
 			boolean foundSafe = false;
 			
@@ -149,7 +147,6 @@ public class StatefulDrone extends Drone {
 					dir = testDir;
 					foundSafe = true;
 					break;
-
 				}
 			}
 			

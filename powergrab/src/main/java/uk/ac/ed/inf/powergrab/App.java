@@ -65,7 +65,6 @@ public class App {
 		
 		//Execute the loop if the conditions are fulfilled
 		while (drone.hasPower() && moves < 250) {
-			System.out.println(moves+1);
 			//Compute the direction for the next move
 			Direction nextDirection = drone.computeNextMove();
 			
