@@ -53,7 +53,8 @@ public class StatefulDrone extends Drone {
 		stationsToVisit.remove(getExchangeStation());
 		failedToVisit.remove(getExchangeStation());
 		
-		if (position.getDistance(currentTarget.coordinates) <= 0.00055 && !isWithinDistance(currentTarget))
+		if (dir == null && position.getDistance(currentTarget.coordinates) <= 0.00055 
+			&& !isWithinDistance(currentTarget))
 			dir = finalDirection();
 		
 		if (dir == null) {
