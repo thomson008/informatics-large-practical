@@ -53,6 +53,9 @@ public class StatefulDrone extends Drone {
 		stationsToVisit.remove(getExchangeStation());
 		failedToVisit.remove(getExchangeStation());
 		
+		if (position.getDistance(currentTarget.coordinates) <= 0.00055 && !isWithinDistance(currentTarget))
+			dir = finalDirection();
+		
 		if (dir == null) {
 			dir = position.computeDirection(currentTarget.coordinates);
 			if (!position.nextPosition(dir).inPlayArea()) dir = randomDirection();
@@ -80,7 +83,8 @@ public class StatefulDrone extends Drone {
 		for (int i = 0; i < 16; i++) {
 			Direction dir = Direction.values()[i];
 			Position next = position.nextPosition(dir);
-			if (next.getClosest() == currentTarget && next.getDistance(currentTarget.coordinates) <= 0.00025)
+			if (next.getClosest() == currentTarget && next.getDistance(currentTarget.coordinates) <= 0.00025 
+				&& next.inPlayArea())
 				return dir;
 		}
 		return null;
