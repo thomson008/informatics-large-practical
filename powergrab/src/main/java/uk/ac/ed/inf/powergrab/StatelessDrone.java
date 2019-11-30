@@ -25,7 +25,7 @@ public class StatelessDrone extends Drone {
 		int directionIdx;
 		Position nextPosition;
 
-		if (posStationWithinMove == null) {
+		if (posStationWithinMove == null || isWithinDistance(posStationWithinMove)) {
 			do {
 				directionIdx = random.nextInt(16);
 				direction = Direction.values()[directionIdx];
