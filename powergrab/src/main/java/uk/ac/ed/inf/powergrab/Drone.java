@@ -107,4 +107,21 @@ public abstract class Drone {
 		
 		return stationWithinRange;
 	}
+	
+	/**
+	 * Used when a drone is within one move of a positive station, to find the first
+	 * direction that will make it exchange with that station (i.e. make it its closest station)
+	 * @param target
+	 * @return
+	 */
+	protected Direction finalDirection(Station target) {
+		for (int i = 0; i < 16; i++) {
+			Direction dir = Direction.values()[i];
+			Position next = position.nextPosition(dir);
+			if (next.getClosest() == target && next.getDistance(target.coordinates) <= 0.00025 
+				&& next.inPlayArea())
+				return dir;
+		}
+		return null;
+	}
 }

@@ -25,19 +25,37 @@ public class StatelessDrone extends Drone {
 		int directionIdx;
 		Position nextPosition;
 
-		if (posStationWithinMove == null || isWithinDistance(posStationWithinMove)) {
+		if (posStationWithinMove == null || isWithinDistance(posStationWithinMove)) {			
 			do {
 				directionIdx = random.nextInt(16);
 				direction = Direction.values()[directionIdx];
 				nextPosition = position.nextPosition(direction);
-			} while (!nextPosition.inPlayArea() || nextPosition.inNegativeRange());
+				// Continue looking for directions that will not put the drone in negative area,
+				// unless there is no such direction
+			} while (!nextPosition.inPlayArea() || nextPosition.inNegativeRange() && !isSurrounded());
 		}
 		
-		else  
-			direction = position.computeDirection(posStationWithinMove.coordinates);
-		
-		
+		else  {
+			direction = finalDirection(posStationWithinMove);
+			if (direction == null)
+				direction = position.computeDirection(posStationWithinMove.coordinates);
+		}
+
 		return direction;
+	}
+	
+	
+	/**
+	 * Checks if there is any move that will not put the drone in a negative area
+	 * @return
+	 */
+	private boolean isSurrounded() {
+		for (Direction dir : Direction.values()) {
+			if (!position.nextPosition(dir).inNegativeRange() && position.nextPosition(dir).inPlayArea())
+				return false;
+		}
+		
+		return true;
 	}
 	
 	/**

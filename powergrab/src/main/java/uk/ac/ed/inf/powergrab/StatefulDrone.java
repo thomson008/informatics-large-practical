@@ -38,7 +38,7 @@ public class StatefulDrone extends Drone {
 			 getting stuck */
 			if (currentTarget != null && currentTarget != getExchangeStation()) {
 				// Try to go to a place that will allow exchange with that station
-				dir = finalDirection();
+				dir = finalDirection(currentTarget);
 				failedToVisit.add(currentTarget);	
 			}
 			
@@ -55,7 +55,7 @@ public class StatefulDrone extends Drone {
 		
 		if (dir == null && position.getDistance(currentTarget.coordinates) <= 0.00055 
 			&& !isWithinDistance(currentTarget))
-			dir = finalDirection();
+			dir = finalDirection(currentTarget);
 		
 		if (dir == null) {
 			dir = position.computeDirection(currentTarget.coordinates);
@@ -81,16 +81,6 @@ public class StatefulDrone extends Drone {
 		return dir;
 	}
 	
-	private Direction finalDirection() {
-		for (int i = 0; i < 16; i++) {
-			Direction dir = Direction.values()[i];
-			Position next = position.nextPosition(dir);
-			if (next.getClosest() == currentTarget && next.getDistance(currentTarget.coordinates) <= 0.00025 
-				&& next.inPlayArea())
-				return dir;
-		}
-		return null;
-	}
 	
 	/**
 	 * <p> Checks if there is a negative station within charging distance
