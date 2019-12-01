@@ -108,7 +108,7 @@ public class StatefulDrone extends Drone {
 	/**
 	 * <p> Changes the direction so it doesn't mindlessly go towards target, but might dodge a negative station if
 	 * there's one on its way
-	 * @param dir
+	 * @param dir Direction it would go to if there wasn't a negative station
 	 * @return Direction, possibly altered for a dodge
 	 */
 	private Direction getDodgeDirection(Direction dir) {

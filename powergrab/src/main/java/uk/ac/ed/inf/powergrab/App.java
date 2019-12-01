@@ -42,17 +42,41 @@ public class App {
         //Set the initial position of the drone according to input param
         Position initialPosition = new Position(Double.parseDouble(args[3]), Double.parseDouble(args[4]));
         
+        if (!initialPosition.inPlayArea()) {
+        	System.out.println("Invalid starting position: out of playing range!");
+        	return;
+        }
+        
         // Initialise an appropriate type of drone
         droneType = args[6];
-        if (droneType.equals("stateless")) 
-        	drone = new StatelessDrone(initialPosition, new Random(seed));
-        else if (droneType.equals("stateful"))
-        	drone = (StatefulDrone) new StatefulDrone(initialPosition, new Random(seed));
-        else
-        	drone = new StatelessDrone(initialPosition, new Random(seed));	
-        
+        createDrone(initialPosition, seed);
+
         //Start the game
+        System.out.println("Starting simulation...");
         playGame();
+    }
+    
+    /**
+     * Creates a Drone object of the appropriate subclass: stateless or stateful
+     * @param droneType
+     * @param initialPosition
+     * @param seed
+     */
+    private static void createDrone(Position initialPosition, int seed) {
+        if (droneType.equals("stateless")) {
+        	drone = new StatelessDrone(initialPosition, new Random(seed));
+        	System.out.println("Stateless drone selected.");
+        }
+
+        else if (droneType.equals("stateful")) {
+        	drone = (StatefulDrone) new StatefulDrone(initialPosition, new Random(seed));
+        	System.out.println("Stateful drone selected.");
+        }
+        else {
+        	drone = new StatefulDrone(initialPosition, new Random(seed));	
+        	droneType = "stateful";
+        	System.out.println("Drone type not recognized. Defaulting to Stateful.");
+        }
     }
 
 	private static void playGame() {
@@ -94,6 +118,7 @@ public class App {
 		
 		generateFiles();
 		System.out.println("Flightpath simulated. All files successfully generated.");
+		System.out.println(String.format("Final coins: %.1f; Final power: %.2f",drone.getCoins(), drone.getPower()));
 	}
 	
 	private static void generateFiles() {
