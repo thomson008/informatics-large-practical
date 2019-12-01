@@ -16,11 +16,11 @@ public abstract class Drone {
 	private double coins = 0.0;
 	protected Position position;
 	protected Random random;
-	protected Comparator<Station> itemsCmp = new Comparator<Station>() {
+	protected static Comparator<Station> itemsCmp = new Comparator<Station>() {
 		public int compare(Station s1, Station s2) {
 			if (s1.getCoins() + s1.getPower() < s2.getCoins() + s2.getPower())
 				return -1;
-			else if (s1.getCoins() == s2.getCoins())
+			else if (s1.getCoins() + s1.getPower() == s2.getCoins() + s2.getPower())
 				return 0;
 			else 
 				return 1;

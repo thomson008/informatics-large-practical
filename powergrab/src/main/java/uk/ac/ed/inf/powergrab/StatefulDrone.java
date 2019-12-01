@@ -102,17 +102,7 @@ public class StatefulDrone extends Drone {
 	 */
 	private boolean isSafePosition(Position pos) {
 		Station closest = Collections.min(App.stations, pos.distanceCmp);
-		
-		boolean isWithinNeg = false;
-		for (Station s : App.stations) {
-			if (pos.getDistance(s.coordinates) <= 0.00025 && (s.getCoins() < 0 || s.getPower() < 0))  {
-				isWithinNeg = true;
-				break;
-			}
-
-		}
-		
-		return (closest.isPositive() || !isWithinNeg) && pos.inPlayArea();
+		return (closest.isPositive() || !isWithinNegative(pos)) && pos.inPlayArea();
 	}
 	
 	/**
