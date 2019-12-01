@@ -53,9 +53,9 @@ public class StatefulDrone extends Drone {
 			}
 		}
 		
-		if (dir == null && position.getDistance(currentTarget.coordinates) <= 0.00055 
-			&& !isWithinDistance(currentTarget))
+		if (dir == null && position.getDistance(currentTarget.coordinates) <= 0.00055) 
 			dir = finalDirection(currentTarget);
+	
 		
 		if (dir == null) {
 			dir = position.computeDirection(currentTarget.coordinates);
@@ -116,16 +116,25 @@ public class StatefulDrone extends Drone {
 			int newIdx;
 			boolean foundSafe = false;
 			
+			int minDiff = 8;
+			
+			// Iterate through all directions and find one that dodges a negative station and moves the drone
+			// closer to target. If there is more than one, give the one that differs the least from the original
 			for (int i = 0; i < 16; i++) {
 				newIdx = (i + idx) % 16;
+				int diff = Math.abs(newIdx - idx);
+				if (diff > 8) diff = 16 -diff;
 
 				Direction testDir = Direction.values()[newIdx];
 				if (isSafePosition(position.nextPosition(testDir)) &&
 					position.nextPosition(testDir).getDistance(currentTarget.coordinates) < 
 					position.getDistance(currentTarget.coordinates)) {
-					dir = testDir;
+					if (diff < minDiff) {
+						dir = testDir;
+						minDiff = diff;
+					}
+					
 					foundSafe = true;
-					break;
 				}
 			}
 			
