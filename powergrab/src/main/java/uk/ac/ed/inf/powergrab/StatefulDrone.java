@@ -89,7 +89,7 @@ public class StatefulDrone extends Drone {
 	 */
 	private boolean isWithinNegative(Position pos) {
 		for (Station s : App.stations) {
-			if (pos.getDistance(s.coordinates) <= 0.00025 && (s.getCoins() < 0 || s.getPower() < 0)) 
+			if (pos.getDistance(s.coordinates) <= 0.00025 && (!s.isPositive())) 
 				return true;
 		}
 		return false;
