@@ -165,10 +165,10 @@ public class StatefulDrone extends Drone {
 	 */
 	private Direction safeDirection() {
 		for (Direction d : Direction.values()) {
-			if (!isWithinNegative(position.nextPosition(d)) && position.nextPosition(d).inPlayArea()) {
+			if (isSafePosition(position.nextPosition(d)) && position.nextPosition(d).inPlayArea()) {
 				return d;
 			}
 		}
-		return getDodgeDirection(randomDirection());
+		return randomDirection();
 	}
 }
