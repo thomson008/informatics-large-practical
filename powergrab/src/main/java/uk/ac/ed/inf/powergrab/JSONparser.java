@@ -13,11 +13,7 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
-/**
- * 
- * @author Tomek
- *
- */
+
 public class JSONparser {
 	public static FeatureCollection features;
 	public static List<Feature> featureList;

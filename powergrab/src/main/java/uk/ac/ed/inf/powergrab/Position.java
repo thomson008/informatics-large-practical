@@ -3,12 +3,6 @@ package uk.ac.ed.inf.powergrab;
 import java.util.Collections;
 import java.util.Comparator;
 
-
-/**
- * 
- * @author Tomek
- *
- */
 public class Position {
 	public double latitude;
 	public double longitude;
@@ -64,7 +58,7 @@ public class Position {
 	/**
 	 * 
 	 * @param position Position of the other point on the map
-	 * @return	distance bewteen this position and the position of the other point
+	 * @return	distance between this position and the position of the other point
 	 */
 	public double getDistance(Position position) {		
 		double xDistance = longitude - position.longitude;
@@ -112,19 +106,6 @@ public class Position {
 	 * @return
 	 */
 	public Station getClosest() {
-		Station closest = Collections.min(App.stations, new Comparator<Station>() {
-			public int compare (Station s1, Station s2) {
-				double dist1 = getDistance(s1.coordinates);
-				double dist2 = getDistance(s2.coordinates);
-				if (dist1 < dist2) 
-					return -1;
-				else if (dist1 == dist2)
-					return 0;
-				else 
-					return 1;
-			}
-		});
-		
-		return closest;
+		return Collections.min(App.stations, distanceCmp);
 	}
 }

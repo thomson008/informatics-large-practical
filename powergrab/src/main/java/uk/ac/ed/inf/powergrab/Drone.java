@@ -6,11 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-/**
- * 
- * @author Tomek
- *
- */
 public abstract class Drone {
 	private double power = 250.0;
 	private double coins = 0.0;

@@ -10,11 +10,6 @@ import java.util.Random;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 
-/**
- * 
- * @author Tomek
- *
- */
 public class App {
 	public static List<Station> stations;
 	private static Drone drone;

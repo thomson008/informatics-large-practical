@@ -5,11 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-/**
- * 
- * @author Tomek
- *
- */
 public class StatelessDrone extends Drone {
 	public StatelessDrone(Position initialPosition, Random random) {
 		super(initialPosition, random);
