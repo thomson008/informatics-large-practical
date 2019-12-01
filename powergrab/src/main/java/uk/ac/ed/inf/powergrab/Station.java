@@ -5,7 +5,7 @@ public class Station {
 	private double power;
 	private double coins;
 
-	public Position coordinates;
+	public final Position coordinates;
 	
 	public Station(String id, Position coordinates, double coins, double power) {
 		this.id = id;

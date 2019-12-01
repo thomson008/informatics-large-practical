@@ -59,7 +59,7 @@ public class StatefulDrone extends Drone {
 		
 		if (dir == null) {
 			dir = position.computeDirection(currentTarget.coordinates);
-			if (!position.nextPosition(dir).inPlayArea()) dir = randomDirection();
+			if (!position.nextPosition(dir).inPlayArea()) dir = safeDirection();
 		}
 
 		return getDodgeDirection(dir);
@@ -71,7 +71,6 @@ public class StatefulDrone extends Drone {
 	 * @return Direction, random
 	 */
 	private Direction randomDirection() {
-
 		Direction dir;
 		
 		do {
@@ -133,7 +132,7 @@ public class StatefulDrone extends Drone {
 			// If a safe direction was not found, go to the least negative station.
 			if (!foundSafe) dir = bestNegative(dir);
 		}
-		
+
 		return dir;
 	}
 	
