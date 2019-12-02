@@ -1,9 +1,6 @@
 package uk.ac.ed.inf.powergrab;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Random;
 
 public abstract class Drone {
@@ -89,18 +86,10 @@ public abstract class Drone {
 	 * @return
 	 */
 	public Station getExchangeStation() {
-		List<Station> stationsWithinRange = new ArrayList<>();
-		for (Station station : App.stations) {
-			if (isWithinDistance(station))
-				stationsWithinRange.add(station);	
-		}
-		
-		if (stationsWithinRange.isEmpty())
-			return null;
-		
-		Station stationWithinRange = Collections.min(stationsWithinRange, position.distanceCmp);
-		
-		return stationWithinRange;
+		Station closestStation = position.getClosest();
+		if (isWithinDistance(closestStation))
+			return closestStation;
+		return null;
 	}
 	
 	/**

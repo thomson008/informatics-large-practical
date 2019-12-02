@@ -31,6 +31,6 @@ public class Station {
 	}
 	
 	public boolean isPositive() {
-		return coins >= 0;
+		return coins >= 0 && power >= 0;
 	}
 }

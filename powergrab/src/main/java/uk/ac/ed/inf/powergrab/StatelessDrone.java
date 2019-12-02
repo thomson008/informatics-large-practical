@@ -79,7 +79,8 @@ public class StatelessDrone extends Drone {
 			double distance = position.getDistance(station.coordinates);
 			Direction dir = position.computeDirection(station.coordinates);
 			Position hypotheticalNextPos = position.nextPosition(dir);
-			if (distance <= 0.00055 && (station.getCoins() > 0 || station.getPower() > 0) && hypotheticalNextPos.inPlayArea())
+			if (distance <= 0.00055 && (station.getCoins() > 0 || station.getPower() > 0) &&
+				hypotheticalNextPos.inPlayArea())
 				stations.add(station);	
 		}
 		

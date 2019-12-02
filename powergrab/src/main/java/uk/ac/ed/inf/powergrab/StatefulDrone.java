@@ -43,20 +43,10 @@ public class StatefulDrone extends Drone {
 			}
 			
 			// Find a new target by looking for the closest positive station
-			if (!stationsToVisit.isEmpty()) {
-				currentTarget = Collections.min(stationsToVisit, position.distanceCmp);
-				stationsToVisit.remove(currentTarget);
-			}
-			else if (!failedToVisit.isEmpty()) {
-				currentTarget = Collections.min(failedToVisit, position.distanceCmp);
-				failedToVisit.remove(currentTarget);
-			}
+			getNewTarget();
 		}
 		
-		if (dir == null && position.getDistance(currentTarget.coordinates) <= 0.00055) 
-			dir = finalDirection(currentTarget);
-	
-		
+		if (dir == null) dir = finalDirection(currentTarget);
 		if (dir == null) {
 			dir = position.computeDirection(currentTarget.coordinates);
 			if (!position.nextPosition(dir).inPlayArea()) dir = safeDirection();
@@ -65,7 +55,21 @@ public class StatefulDrone extends Drone {
 		return getDodgeDirection(dir);
 	}
 	
-	
+	/**
+	 * Acquires new target for the drone
+	 */
+	private void getNewTarget() {
+		if (!stationsToVisit.isEmpty()) {
+			currentTarget = Collections.min(stationsToVisit, position.distanceCmp);
+			stationsToVisit.remove(currentTarget);
+		}
+		
+		else if (!failedToVisit.isEmpty()) {
+			currentTarget = Collections.min(failedToVisit, position.distanceCmp);
+			failedToVisit.remove(currentTarget);
+		}
+	}
+
 	/**
 	 * Generates random direction
 	 * @return Direction, random
@@ -80,20 +84,6 @@ public class StatefulDrone extends Drone {
 		return dir;
 	}
 	
-	
-	/**
-	 * <p> Checks if there is a negative station within charging distance
-	 * @param pos
-	 * @return boolean, true if there is such station, false otherwise
-	 */
-	private boolean isWithinNegative(Position pos) {
-		for (Station s : App.stations) {
-			if (pos.getDistance(s.coordinates) <= 0.00025 && (!s.isPositive())) 
-				return true;
-		}
-		return false;
-	}
-	
 	/**
 	 * <p> Checks if the potential dodge position will improve the situation
 	 * @param pos
@@ -101,7 +91,7 @@ public class StatefulDrone extends Drone {
 	 */
 	private boolean isSafePosition(Position pos) {
 		Station closest = Collections.min(App.stations, pos.distanceCmp);
-		return (closest.isPositive() || !isWithinNegative(pos)) && pos.inPlayArea();
+		return (closest.isPositive() || !pos.inNegativeRange()) && pos.inPlayArea();
 	}
 	
 	/**
@@ -123,7 +113,7 @@ public class StatefulDrone extends Drone {
 			for (int i = 0; i < 16; i++) {
 				newIdx = (i + idx) % 16;
 				int diff = Math.abs(newIdx - idx);
-				if (diff > 8) diff = 16 -diff;
+				if (diff > 8) diff = 16 - diff;
 
 				Direction testDir = Direction.values()[newIdx];
 				if (isSafePosition(position.nextPosition(testDir)) &&
