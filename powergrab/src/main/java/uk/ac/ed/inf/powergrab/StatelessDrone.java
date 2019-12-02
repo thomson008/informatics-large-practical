@@ -26,7 +26,8 @@ public class StatelessDrone extends Drone {
 			direction = finalDirection(posStationWithinMove);
 			if (direction == null)
 				direction = position.computeDirection(posStationWithinMove.coordinates);
-			if (!position.nextPosition(direction).getClosest().isPositive())
+			if (!position.nextPosition(direction).getClosest().isPositive() || 
+				!position.nextPosition(direction).inPlayArea())
 				direction = generateRandomDirection();
 		}
 
@@ -76,18 +77,14 @@ public class StatelessDrone extends Drone {
 		List<Station> stations = new ArrayList<>();
 		
 		for (Station station : App.stations) {
-			double distance = position.getDistance(station.coordinates);
-			Direction dir = position.computeDirection(station.coordinates);
-			Position hypotheticalNextPos = position.nextPosition(dir);
-			if (distance <= 0.00055 && (station.getCoins() > 0 || station.getPower() > 0) &&
-				hypotheticalNextPos.inPlayArea())
+			if (isStationWithinMove(station) && (station.getCoins() > 0 || station.getPower() > 0))
 				stations.add(station);	
 		}
 		
 		if (stations.isEmpty())
 			return null;
 		
-		Station bestStation = Collections.max(stations, itemsCmp);
+		Station bestStation = Collections.max(stations, Station.itemsCmp);
 		
 		return bestStation;
 	}

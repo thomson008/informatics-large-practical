@@ -26,13 +26,13 @@ public class StatefulDrone extends Drone {
 		stationsToVisit.remove(getExchangeStation());
 		failedToVisit.remove(getExchangeStation());
 		
-		if (stationsToVisit.isEmpty() && failedToVisit.isEmpty() && getExchangeStation() == currentTarget)
-			return safeDirection();
-		
 		Direction dir = null;
 		
+		if (stationsToVisit.isEmpty() && failedToVisit.isEmpty() && getExchangeStation() == currentTarget)
+			dir = safeDirection();
+		
 		// If the target has not been set yet or has just been reached
-		if (currentTarget == null || isWithinDistance(currentTarget)) {
+		else if (currentTarget == null || isWithinDistance(currentTarget)) {
 			/* If the exchange station is not as expected, add the current target to a list of stations
 			 that were failed to collect. The drone will come back to it in the end in order to avoid
 			 getting stuck */
@@ -149,11 +149,11 @@ public class StatefulDrone extends Drone {
 			int idxDiff = Math.abs(dirIdx - newDirIdx);
 			if (idxDiff > 8) idxDiff = 16 - idxDiff;
 			
-			if (position.getDistance(station.coordinates) <= 0.00055 && !station.isPositive() && idxDiff < 4) 
+			if (isStationWithinMove(station) && !station.isPositive() && idxDiff < 4) 
 				stations.add(station);	
 		}
 
-		Station bestStation = Collections.max(stations, itemsCmp);
+		Station bestStation = Collections.max(stations, Station.itemsCmp);
 
 		return position.computeDirection(bestStation.coordinates);
 	}
@@ -163,11 +163,9 @@ public class StatefulDrone extends Drone {
 	 * @return
 	 */
 	private Direction safeDirection() {
-		for (Direction d : Direction.values()) {
-			if (isSafePosition(position.nextPosition(d)) && position.nextPosition(d).inPlayArea()) {
-				return d;
-			}
-		}
+		for (Direction d : Direction.values()) 
+			if (isSafePosition(position.nextPosition(d))) return d;
+		
 		return randomDirection();
 	}
 }

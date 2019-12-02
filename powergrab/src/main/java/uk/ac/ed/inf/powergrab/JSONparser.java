@@ -68,15 +68,13 @@ public class JSONparser {
 		for (Feature feature : featureList) {
 			Point coordinates = (Point) feature.geometry();
 			
-			String id = feature.getStringProperty("id");
-			
 			double coins = feature.getNumberProperty("coins").doubleValue();
 			double power = feature.getNumberProperty("power").doubleValue();
 			double longitude = coordinates.longitude();
 			double latitude = coordinates.latitude();
 			
 			Position stationPosition = new Position(latitude, longitude);
-			Station newStation = new Station(id, stationPosition, coins, power);
+			Station newStation = new Station(stationPosition, coins, power);
 			stationList.add(newStation);
 		}
 		
