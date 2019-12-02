@@ -9,6 +9,7 @@ public class StatefulDrone extends Drone {
 	private List<Station> stationsToVisit = new ArrayList<>();
 	private List<Station> failedToVisit = new ArrayList<>();
 	private Station currentTarget;
+	private Direction previousDirection;
 	
 	public StatefulDrone(Position initialPosition, Random random) {
 		super(initialPosition, random);
@@ -51,8 +52,10 @@ public class StatefulDrone extends Drone {
 			dir = position.computeDirection(currentTarget.coordinates);
 			if (!position.nextPosition(dir).inPlayArea()) dir = safeDirection();
 		}
+		
+		previousDirection = getDodgeDirection(dir);
 
-		return getDodgeDirection(dir);
+		return previousDirection;
 	}
 	
 	/**
@@ -101,6 +104,8 @@ public class StatefulDrone extends Drone {
 	 * @return Direction, possibly altered for a dodge
 	 */
 	private Direction getDodgeDirection(Direction dir) {
+		Direction newDirection = dir;
+		
 		if (!isSafePosition(position.nextPosition(dir))) {
 			int idx = dir.ordinal();
 			int newIdx;
@@ -110,17 +115,14 @@ public class StatefulDrone extends Drone {
 			
 			// Iterate through all directions and find one that dodges a negative station and moves the drone
 			// closer to target. If there is more than one, give the one that differs the least from the original
-			for (int i = 0; i < 16; i++) {
+			for (int i = 1; i < 16; i++) {
 				newIdx = (i + idx) % 16;
-				int diff = Math.abs(newIdx - idx);
-				if (diff > 8) diff = 16 - diff;
+				int diff = directionDiff(newIdx, idx);
 
 				Direction testDir = Direction.values()[newIdx];
-				if (isSafePosition(position.nextPosition(testDir)) &&
-					position.nextPosition(testDir).getDistance(currentTarget.coordinates) < 
-					position.getDistance(currentTarget.coordinates)) {
+				if (isSafePosition(position.nextPosition(testDir))) {
 					if (diff < minDiff) {
-						dir = testDir;
+						newDirection = testDir;
 						minDiff = diff;
 					}
 					
@@ -129,10 +131,65 @@ public class StatefulDrone extends Drone {
 			}
 			
 			// If a safe direction was not found, go to the least negative station.
-			if (!foundSafe) dir = bestNegative(dir);
+			if (!foundSafe) newDirection = bestNegative(dir);
+			
+			else if (previousDirection != null && 
+					newDirection.ordinal() == (previousDirection.ordinal() + 8) % 16) {
+					newDirection = preventOpposite(idx, (previousDirection.ordinal() + 8) % 16);
+			}
+		}
+		
+		return newDirection;
+	}
+	
+	private int directionDiff(int firstIdx, int secondIdx) {
+		int diff = Math.abs(firstIdx - secondIdx);
+		if (diff > 8) diff = 16 - diff;
+		return diff;
+	}
+	
+	/**
+	 * If the drone wants to come back to its previous position in order to dodge an obstacle,
+	 * try preventing it from doing so as it might cause it to get stuck
+	 * 
+	 * @param idx Index of the Direction in which the drone originally goes
+	 * @return new Direction, possibly changed so it doesn't go back to where it was
+	 */
+	private Direction preventOpposite(int idx, int previousIdx) {
+		System.out.println(previousIdx);
+		Direction direction;
+		Direction clockwise = null;
+		Direction cntrClockwise = null;
+			
+		// Check direction counter-clockwise until one that is safe appears
+		for (int i = 1; i < 16; i++) {
+			direction = Direction.values()[(idx + i) % 16];
+			if (isSafePosition(position.nextPosition(direction))) {
+				cntrClockwise = direction;
+				break;
+			}
 		}
 
-		return dir;
+		// Repeat the same for clockwise order
+		for (int i = 1; i < 16; i++) {
+			int index = idx - i;
+			if (index < 0) index += 16;
+			direction = Direction.values()[index];
+			if (isSafePosition(position.nextPosition(direction))) {
+				clockwise = direction;
+				break;
+			}
+		}
+		
+		
+		// Return the direction that differs the least from the original direction
+		// and isn't the opposite of the previous direction
+		int clkDiff = directionDiff(clockwise.ordinal(), idx);
+		int cntrDiff = directionDiff(cntrClockwise.ordinal(), idx);
+
+		if (clockwise.ordinal() == previousIdx) return cntrClockwise;
+		else if (cntrClockwise.ordinal() == previousIdx) return clockwise;
+		else return clkDiff < cntrDiff ? clockwise : cntrClockwise;
 	}
 	
 	/**
