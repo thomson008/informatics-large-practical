@@ -156,7 +156,6 @@ public class StatefulDrone extends Drone {
 	 * @return new Direction, possibly changed so it doesn't go back to where it was
 	 */
 	private Direction preventOpposite(int idx, int previousIdx) {
-		System.out.println(previousIdx);
 		Direction direction;
 		Direction clockwise = null;
 		Direction cntrClockwise = null;
