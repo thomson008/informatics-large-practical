@@ -10,6 +10,7 @@ public class StatefulDrone extends Drone {
 	private List<Station> failedToVisit = new ArrayList<>();
 	private Station currentTarget;
 	private Direction previousDirection;
+	private boolean collectedLastStation = false;
 	
 	public StatefulDrone(Position initialPosition, Random random) {
 		super(initialPosition, random);
@@ -23,6 +24,7 @@ public class StatefulDrone extends Drone {
 	}
 	
 	public Direction computeNextMove() {
+		if (stationsToVisit.isEmpty() && currentTarget == getExchangeStation()) collectedLastStation = true;
 		// In case a station was accidentally crossed, remove them from both lists
 		stationsToVisit.remove(getExchangeStation());
 		failedToVisit.remove(getExchangeStation());
@@ -131,7 +133,8 @@ public class StatefulDrone extends Drone {
 			if (!foundSafe) newDirection = bestNegative(dir);
 		}
 
-		if (previousDirection != null && !stationsToVisit.isEmpty() &&
+		// Prevent going backwards, if possible. It might lead to getting stuck
+		if (previousDirection != null && !collectedLastStation &&
 				newDirection.ordinal() == (previousDirection.ordinal() + 8) % 16) {
 				newDirection = preventOpposite(dir.ordinal(), (previousDirection.ordinal() + 8) % 16);
 		}
