@@ -105,7 +105,7 @@ public class App {
 			double newLongitude = drone.position.longitude;
 			
 			//Add the move to the log String
-			movesLog += String.format("%f, %f, %s, %f, %f, %.1f, %.2f\n", latitude, longitude, 
+			movesLog += String.format("%f, %f, %s, %f, %f, %f, %f\n", latitude, longitude, 
 					nextDirection.toString(), newLatitude, newLongitude, drone.getCoins(), drone.getPower());
 
 			moves++;
@@ -113,7 +113,7 @@ public class App {
 		
 		generateFiles();
 		System.out.println("Flightpath simulated. All files successfully generated.");
-		System.out.println(String.format("Final coins: %.1f; Final power: %.2f",drone.getCoins(), drone.getPower()));
+		System.out.println(String.format("Final coins: %f; Final power: %f",drone.getCoins(), drone.getPower()));
 	}
 	
 	private static void generateFiles() {

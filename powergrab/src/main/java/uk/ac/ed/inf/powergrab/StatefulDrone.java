@@ -105,6 +105,7 @@ public class StatefulDrone extends Drone {
 	 */
 	private Direction getDodgeDirection(Direction dir) {
 		Direction newDirection = dir;
+		//System.out.println(dir);
 		
 		if (!isSafePosition(position.nextPosition(dir))) {
 			int idx = dir.ordinal();
@@ -120,13 +121,13 @@ public class StatefulDrone extends Drone {
 				int diff = directionDiff(newIdx, idx);
 
 				Direction testDir = Direction.values()[newIdx];
+				
 				if (isSafePosition(position.nextPosition(testDir))) {
 					if (diff < minDiff) {
 						newDirection = testDir;
 						minDiff = diff;
+						foundSafe = true;
 					}
-					
-					foundSafe = true;
 				}
 			}
 			

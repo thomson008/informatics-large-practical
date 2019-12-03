@@ -20,6 +20,7 @@ public class JSONparser {
 	public static List<Point> points = new ArrayList<>();
 	public static LineString ls;
 	public static Feature route;
+	public static double total = 0;
 	/**
 	 * 
 	 * @param rd
@@ -72,6 +73,7 @@ public class JSONparser {
 			double power = feature.getNumberProperty("power").doubleValue();
 			double longitude = coordinates.longitude();
 			double latitude = coordinates.latitude();
+			if (coins > 0) total += coins;
 			
 			Position stationPosition = new Position(latitude, longitude);
 			Station newStation = new Station(stationPosition, coins, power);
