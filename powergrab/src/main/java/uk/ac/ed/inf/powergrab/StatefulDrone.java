@@ -129,11 +129,11 @@ public class StatefulDrone extends Drone {
 			
 			// If a safe direction was not found, go to the least negative station.
 			if (!foundSafe) newDirection = bestNegative(dir);
-			
-			else if (previousDirection != null && 
-					newDirection.ordinal() == (previousDirection.ordinal() + 8) % 16) {
-					newDirection = preventOpposite(idx, (previousDirection.ordinal() + 8) % 16);
-			}
+		}
+
+		if (previousDirection != null && !stationsToVisit.isEmpty() &&
+				newDirection.ordinal() == (previousDirection.ordinal() + 8) % 16) {
+				newDirection = preventOpposite(dir.ordinal(), (previousDirection.ordinal() + 8) % 16);
 		}
 		
 		return newDirection;
