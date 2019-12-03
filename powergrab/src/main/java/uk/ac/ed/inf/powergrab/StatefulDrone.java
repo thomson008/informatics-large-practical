@@ -24,7 +24,8 @@ public class StatefulDrone extends Drone {
 	}
 	
 	public Direction computeNextMove() {
-		if (stationsToVisit.isEmpty() && currentTarget == getExchangeStation()) collectedLastStation = true;
+		if (stationsToVisit.isEmpty() && failedToVisit.isEmpty() && currentTarget == getExchangeStation())
+			collectedLastStation = true;
 		// In case a station was accidentally crossed, remove them from both lists
 		stationsToVisit.remove(getExchangeStation());
 		failedToVisit.remove(getExchangeStation());
