@@ -48,13 +48,10 @@ public class StatefulDrone extends Drone {
 		}
 		
 		if (dir == null) dir = finalDirection(currentTarget);
-		if (dir == null) {
+		if (dir == null) 
 			dir = position.computeDirection(currentTarget.coordinates);
-			if (!position.nextPosition(dir).inPlayArea()) dir = safeDirection();
-		}
 		
 		previousDirection = getDodgeDirection(dir);
-
 		return previousDirection;
 	}
 	
@@ -179,7 +176,6 @@ public class StatefulDrone extends Drone {
 				break;
 			}
 		}
-		
 		
 		// Return the direction that differs the least from the original direction
 		// and isn't the opposite of the previous direction
